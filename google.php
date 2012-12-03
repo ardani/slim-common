@@ -1,6 +1,6 @@
 <?php
 $client = new Google_Client();
-$client->setApplicationName('GA Lib');
+$client->setApplicationName('YOUR-APPLICATION-NAME');
 $client->setClientId(config('google.client.id'));
 $client->setClientSecret(config('google.client.secret'));
 $client->setRedirectUri('http://'.$_SERVER['HTTP_HOST'].'/auth');
