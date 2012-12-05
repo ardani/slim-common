@@ -1,4 +1,10 @@
 <?php
+/**
+ * Upload the specified file to Sincerely.
+ * @param String A local path or some path readable by file_get_contents()
+ * @return The ID of the image, now stored with Sincerely.
+ * @throws Exception On API error
+ */
 function sincerely_upload($file_path) {
   $ch = curl_init();
 
@@ -30,13 +36,12 @@ function sincerely_upload($file_path) {
   }
 }
 
-// NO_RECIPIENTS - at least one needs to be defined
-//     NO_PHOTO - invalid photo for frontPhotoId or no id given
-//     NO_PRODUCT - invalid/unsupported product type defined
-//     BAD_APPKEY - invalid developer token provided, please check your appkey
-//     NO_APPKEY_GIVEN - appkey was not sent along with request
-//     NO_SENDER - invalid sender account or account not given
-
+/**
+ * Create a new Postcard, queue for delivery.
+ * @param Array or String - arguments for the create endpoint of the Sincerely API
+ * @return Decoded API response
+ * @see https://dev.sincerely.com/docs
+ */ 
 function sincerely_create($args = '') {
   if (is_string($args)) {
     parse_str($args, $options);
@@ -95,6 +100,13 @@ function sincerely_create($args = '') {
   // send request
   $output = curl_exec($ch);
   curl_close($ch);
+
+  // NO_RECIPIENTS - at least one needs to be defined
+  // NO_PHOTO - invalid photo for frontPhotoId or no id given
+  // NO_PRODUCT - invalid/unsupported product type defined
+  // BAD_APPKEY - invalid developer token provided, please check your appkey
+  // NO_APPKEY_GIVEN - appkey was not sent along with request
+  // NO_SENDER - invalid sender account or account not given
 
   if ($output) {
     return json_decode($output);

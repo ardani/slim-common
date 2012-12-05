@@ -1,11 +1,13 @@
 <?php
-$client = new Google_Client();
-$client->setApplicationName('YOUR-APPLICATION-NAME');
-$client->setClientId(config('google.client.id'));
-$client->setClientSecret(config('google.client.secret'));
-$client->setRedirectUri('http://'.$_SERVER['HTTP_HOST'].'/auth');
+$google = new Google_Client();
+$google->setApplicationName('YOUR-APPLICATION-NAME');
+$google->setClientId(config('google.client.id'));
+$google->setClientSecret(config('google.client.secret'));
 $gaservice = new Google_AnalyticsService($client);
 $infoservice = new Google_Oauth2Service($client);
+
+$google->setRedirectUri('http://'.$_SERVER['HTTP_HOST'].'/auth');
+
 
 if ($user = has_session()) {  
   try {
