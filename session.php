@@ -3,6 +3,10 @@ session_cache_limiter(false);
 session_start();
 $current_user = false;
 
+if (!config('auth.salt')) {
+  throw new Exception("Please set auth.salt config var to a strong key");
+}
+
 class Role extends Model {}
 
 class Group extends Model {}
@@ -10,7 +14,7 @@ class Group extends Model {}
 class User extends Model {
 
   function _register() {
-    return 'here';
+    
   }
 
   function roles() {
@@ -150,10 +154,6 @@ function verify_nonce($seed = null, $nonce, $onetime = false) {
 
   @session_start();
   $seed .= session_id();
-  $load = LoaderHelper::getInstance();
-  if ($load->isLoggedIn()) {
-    $seed .= $load->member->member_id;
-  }
   // get the current nonce tick
   $tick = _nonce_tick();
   
