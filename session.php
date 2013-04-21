@@ -187,3 +187,12 @@ function has_session() {
 
   return $current_user;
 }
+
+function response_die($app, $msg, $status = 500) {
+  // TODO: log errors
+
+  $response = $app->response();
+  $response->status($status);
+  $response['Content-Type'] = 'text/plain';
+  echo $msg;
+}
