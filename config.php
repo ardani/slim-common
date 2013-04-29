@@ -27,7 +27,6 @@ function config($name, $default = false, $use_app = null) {
   } else {
     $value = $default;
   }
-  error_log("config {$name}={$value}");
   return $value;
 }
 
@@ -50,3 +49,5 @@ function err_log($object) {
 function fatal_log($object) {
   global $log; $log->fatal($object);
 }
+
+date_default_timezone_set(config('timezone', ini_get('date.timezone') ? ini_get('date.timezone') : 'UTC'));
