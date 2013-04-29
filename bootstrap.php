@@ -4,6 +4,25 @@
 // Load Slim
 require(ROOT.'/common/Slim/Slim.php');
 \Slim\Slim::registerAutoloader();
+/**
+ * helper autoloader
+ */
+spl_autoload_register(function($className) {
+  $baseDir = __DIR__.DIRECTORY_SEPARATOR;
+  $className = ltrim($className, '\\');
+  $fileName  = $baseDir;
+  $namespace = '';
+  if ($lastNsPos = strripos($className, '\\')) {
+    $namespace = substr($className, 0, $lastNsPos);
+    $className = substr($className, $lastNsPos + 1);
+    $fileName  .= str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
+  }
+  $fileName .= str_replace('_', DIRECTORY_SEPARATOR, strtolower($className)) . '.php';
+  // error_log($fileName);
+  if (file_exists($fileName)) {
+    return require($fileName);
+  }
+});
 // Initialize Slim:
 $app = new \Slim\Slim(array(
 // Template path: default is /templates in the Root
