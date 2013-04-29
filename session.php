@@ -7,11 +7,11 @@ if (!config('auth.salt')) {
   throw new Exception("Please set auth.salt config var to a strong key");
 }
 
-class Role extends Model {}
+class Role extends SlimModel {}
 
-class Group extends Model {}
+class Group extends SlimModel {}
 
-class User extends Model {
+class User extends SlimModel {
 
   static function _register($userdata) {
     $userdata = (object) $userdata;
@@ -43,6 +43,16 @@ class User extends Model {
     $newUser->password = null;
 
     return $newUser;
+  }
+
+  function sanitize() {
+    $data = parent::sanitize();
+    unset($data['password']);
+    return $data;
+  }
+
+  function apply($input) {
+    return $input;
   }
 
   static function _login($userdata) {

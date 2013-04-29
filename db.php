@@ -5,6 +5,18 @@ ORM::configure('mysql:host='.config('db1.host').';dbname='.config('db1.name').';
 ORM::configure('username', config('db1.user'));
 ORM::configure('password', config('db1.pass'));
 
+class SlimModel extends Model {
+
+  function sanitize() {
+    return $this->as_array();
+  }
+
+  function apply() {
+    
+  }
+
+}
+
 /**
  * lib autoloader, looks in ROOT/lib then ROOT/common/lib
  */
