@@ -159,7 +159,7 @@ class Environment implements \ArrayAccess, \IteratorAggregate
             $env['SERVER_NAME'] = $_SERVER['SERVER_NAME'];
 
             //Number of server port that is running the script
-            $env['SERVER_PORT'] = $_SERVER['SERVER_PORT'];
+            $env['SERVER_PORT'] = isset($_SERVER['HTTP_X_FORWARDED_PORT']) ? $_SERVER['HTTP_X_FORWARDED_PORT'] : $_SERVER['SERVER_PORT'];
 
             //HTTP request headers
             $specialHeaders = array('CONTENT_TYPE', 'CONTENT_LENGTH', 'PHP_AUTH_USER', 'PHP_AUTH_PW', 'PHP_AUTH_DIGEST', 'AUTH_TYPE');
@@ -173,7 +173,11 @@ class Environment implements \ArrayAccess, \IteratorAggregate
             }
 
             //Is the application running under HTTPS or HTTP protocol?
-            $env['slim.url_scheme'] = empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off' ? 'http' : 'https';
+            if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+                $env['slim.url_scheme'] = 'https';    
+            } else {
+                $env['slim.url_scheme'] = empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off' ? 'http' : 'https';
+            }
 
             //Input stream (readable one time only; not available for mutipart/form-data requests)
             $rawInput = @file_get_contents('php://input');
