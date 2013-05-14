@@ -462,7 +462,8 @@ class Request
      */
     public function getPort()
     {
-        return (int) $this->env['SERVER_PORT'];
+        $port = isset($_SERVER['HTTP_X_FORWARDED_PORT']) ? $_SERVER['HTTP_X_FORWARDED_PORT'] : $this->env['SERVER_PORT'];
+        return (int) $port;
     }
 
     /**
@@ -471,7 +472,8 @@ class Request
      */
     public function getScheme()
     {
-        return $this->env['slim.url_scheme'];
+        $scheme = isset($_SERVER['HTTP_X_FORWARDED_PROTO']) ? $_SERVER['HTTP_X_FORWARDED_PROTO'] : $this->env['slim.url_scheme'];
+        return $scheme;
     }
 
     /**
