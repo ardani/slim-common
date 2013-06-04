@@ -39,3 +39,9 @@ $log->setLevel(config('log.level', 0));
 require(ROOT.'/common/memcached.php');
 require(ROOT.'/common/db.php');
 require(ROOT.'/common/session.php');
+// Setup the slim.after hook for printing DB log
+$app->hook('slim.after', function() use ($app) {
+  foreach(ORM::get_query_log() as $entry) {
+    $app->getLog()->debug($entry);
+  }
+});

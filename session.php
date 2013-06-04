@@ -7,11 +7,26 @@ if (!config('auth.salt')) {
   throw new Exception("Please set auth.salt config var to a strong key");
 }
 
-class Role extends SlimModel {}
+class Role extends SlimModel {
 
-class Group extends SlimModel {}
+  static function getOrCreate($name) {
+    $factory = Model::factory(get_called_class());
+    if (!$role = $factory->where('name', $name)->find_one()) {
+      $role = $factory->create();
+      $role->name = $name;
+      $role->save();
+    }
+    return $roll;
+  } 
+
+}
+
+class RoleUser extends SlimModel {}
 
 class User extends SlimModel {
+
+  // role cache
+  private $_roles = false;
 
   static function _register($userdata) {
     $userdata = (object) $userdata;
@@ -45,14 +60,11 @@ class User extends SlimModel {
     return $newUser;
   }
 
-  function sanitize() {
-    $data = parent::sanitize();
+  function encode() {
+    $data = parent::encode();
     unset($data['password']);
+    $data['roles'] = $this->getRoles(true);
     return $data;
-  }
-
-  function apply($input) {
-    return $input;
   }
 
   static function _login($userdata) {
@@ -75,10 +87,9 @@ class User extends SlimModel {
       throw new Exception("Oops! That password is incorrect.");
     }
 
+    $user->apply(array('utc_date_last_login' => date('Y-m-d H:i:s')));
+    
     set_session($user, isset($userdata->remember) ? $userdata->remember : false);
-
-    // null out password
-    $user->password = null;
 
     return $user;
   }
@@ -112,33 +123,43 @@ class User extends SlimModel {
   }
 
   function roles() {
-    return $this->has_many('Role');
+    return $this->has_many_through('Role');
   }
 
-  function groups() {
-    return $this->has_many('Group');
+  function getRoles($flush = false) {
+    if ($this->_roles === false || $flush) {
+      $this->_roles = array_unique(array_map(function($role) {
+        return $role->name;
+      }, $this->roles()->find_many()));
+    }
+    return $this->_roles;
   }
 
-  function can($role, $bool = null) {
+  function can($role_name, $bool = null) {
     // getter:
     if (is_null($bool)) {
-      return (bool) $this->roles()->where('role', $role)->find_one();  
+      return in_array($role_name, $this->getRoles());
+
     // setter:
     } else {
+      $role = Role::getOrCreate($role_name);
       if (true === (bool) $bool) {
         if (!$this->id()) {
           throw new Exception("Cannot add roles to an unsaved User");
         }
-        $role = Model::factory('Role');
-        $role->role = $role;
-        $role->user_id = $this->id();
-        $role->save(); // might dupe up here, but we don't care...
+        $rel = Model::factory('RoleUser');
+        $rel->role_id = $role->id;
+        $rel->user_id = $this->id();
+        $rel->save();
+        $this->getRoles(true);
+
       } else {
-        return $this->roles()->where('role', $role)->delete();
+        return Model::factory('RoleUser')->where('user_id', $this->id())->where('role_id', $role->id)->delete_many();
       }
     }    
   }
 
+  /*
   function in($group, $bool = null) {
     // getter:
     if (is_null($bool)) {
@@ -158,6 +179,7 @@ class User extends SlimModel {
       }
     }  
   }
+  */
 }
 
 /**
@@ -416,6 +438,22 @@ function has_session() {
   return $current_user;
 }
 
+/**
+ * Alias for has_session()
+ * @return User object or false if not an authenticated session
+ */
+function current_user() {
+  return has_session();
+}
+
+/**
+ * Alias for User::can()
+ * @return bool
+ */
+function current_user_can($role_name) {
+  return ( ($user = has_session()) && $user->can($role_name) );
+}
+
 function response_die($app, $msg, $status = 500) {
   // TODO: log errors
 
@@ -423,4 +461,18 @@ function response_die($app, $msg, $status = 500) {
   $response->status($status);
   $response['Content-Type'] = 'text/plain';
   echo $msg;
+}
+
+class AccessException extends Exception {
+
+  function __construct($message = null, $code = null) {
+    if (is_null($message)) {
+      $message = 'You are not allowed to access this resource.';
+    }
+    if (is_null($code)) {
+      $code = 403;
+    }
+    parent::__construct($message, $code);
+  }
+
 }
