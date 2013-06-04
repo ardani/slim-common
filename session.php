@@ -308,8 +308,8 @@ class Bcrypt {
  */
 function csrf($regenerate = false) {
   @session_start();
-  if ($regenerate || empty($_SESSION['csrf']) || !verify_csrf($_SESSION['csrf'])) {
-    $_SESSION['csrf'] = nonce('csrf');
+  if ($regenerate || empty($_SESSION['csrf']) /*|| !verify_csrf($_SESSION['csrf'])*/) {
+    // $_SESSION['csrf'] = nonce('csrf');
   }
   return $_SESSION['csrf'];
 }
