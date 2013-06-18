@@ -387,7 +387,7 @@ function verify_nonce($seed = null, $nonce, $onetime = false) {
   $tick = _nonce_tick();
   
   for($i=0; $i<config('nonce.split', 24); $i++) {
-    if ( substr(hash_hmac('md5', $seed . ( $tick - $i ), AUTH_SALT), -12, 10) == $nonce ) {
+    if ( substr(hash_hmac('md5', $seed . ( $tick - $i ), config('auth.salt')), -12, 10) == $nonce ) {
       return $i+1;  
     }
   }
