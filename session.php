@@ -311,7 +311,7 @@ function csrf($regenerate = false) {
   if ($regenerate || empty($_SESSION['csrf']) /*|| !verify_csrf($_SESSION['csrf'])*/) {
     // $_SESSION['csrf'] = nonce('csrf');
   }
-  return $_SESSION['csrf'];
+  return @$_SESSION['csrf'];
 }
 
 /**
