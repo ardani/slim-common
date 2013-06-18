@@ -307,11 +307,11 @@ class Bcrypt {
  * @return String CSRF nonce
  */
 function csrf($regenerate = false) {
-  @session_start();
+  session_start();
   if ($regenerate || empty($_SESSION['csrf']) || !verify_csrf($_SESSION['csrf'])) {
     $_SESSION['csrf'] = nonce('csrf');
   }
-  return @$_SESSION['csrf'];
+  $_SESSION['csrf'];
 }
 
 /**
@@ -350,7 +350,7 @@ function nonce($seed = null, $onetime = false) {
     $seed .= $random;
   }
 
-  @session_start();
+  session_start();
   $seed .= session_id();
   /*
   $load = LoaderHelper::getInstance();
