@@ -45,3 +45,5 @@ $app->hook('slim.after', function() use ($app) {
     $app->getLog()->debug($entry);
   }
 });
+// Load ApiMiddleware:
+require(ROOT.'/common/api.php');
