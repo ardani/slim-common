@@ -308,7 +308,7 @@ class Bcrypt {
  */
 function csrf($regenerate = false) {
   global $log;
-  $log->error('fuck');
+  error_log('csrf');
   if ($regenerate || empty($_SESSION['csrf']) || !verify_csrf($_SESSION['csrf'])) {
     $_SESSION['csrf'] = nonce('csrf');
   }
