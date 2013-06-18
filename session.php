@@ -307,7 +307,8 @@ class Bcrypt {
  * @return String CSRF nonce
  */
 function csrf($regenerate = false) {
-  session_start();
+  global $log;
+  $log->error('fuck');
   if ($regenerate || empty($_SESSION['csrf']) || !verify_csrf($_SESSION['csrf'])) {
     $_SESSION['csrf'] = nonce('csrf');
   }
@@ -350,14 +351,7 @@ function nonce($seed = null, $onetime = false) {
     $seed .= $random;
   }
 
-  session_start();
   $seed .= session_id();
-  /*
-  $load = LoaderHelper::getInstance();
-  if ($load->isLoggedIn()) {
-    $seed .= $load->member->member_id;
-  }
-  */
   // hash the seed with our auth cookie salt, for extra special uniqueness
   return substr(hash_hmac('md5', $seed . _nonce_tick(), AUTH_SALT), -12, 10);
 }
@@ -388,7 +382,6 @@ function verify_nonce($seed = null, $nonce, $onetime = false) {
     }
   }
 
-  @session_start();
   $seed .= session_id();
   // get the current nonce tick
   $tick = _nonce_tick();
