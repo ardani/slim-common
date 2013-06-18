@@ -353,7 +353,7 @@ function nonce($seed = null, $onetime = false) {
 
   $seed .= session_id();
   // hash the seed with our auth cookie salt, for extra special uniqueness
-  return substr(hash_hmac('md5', $seed . _nonce_tick(), AUTH_SALT), -12, 10);
+  return substr(hash_hmac('md5', $seed . _nonce_tick(), config('auth.salt')), -12, 10);
 }
 
 /**
@@ -362,7 +362,7 @@ function nonce($seed = null, $onetime = false) {
  * used by nonce() and verify_nonce().
  */
 function _nonce_tick() {
-  return ceil(time() / ( NONCE_LIFESPAN / NONCE_SPLIT ));
+  return ceil(time() / ( config('nonce.lifespan', 86400) / config('nonce.split', 24) ));
 }
 
 /**
@@ -386,7 +386,7 @@ function verify_nonce($seed = null, $nonce, $onetime = false) {
   // get the current nonce tick
   $tick = _nonce_tick();
   
-  for($i=0; $i<NONCE_SPLIT; $i++) {
+  for($i=0; $i<config('nonce.split', 24); $i++) {
     if ( substr(hash_hmac('md5', $seed . ( $tick - $i ), AUTH_SALT), -12, 10) == $nonce ) {
       return $i+1;  
     }
