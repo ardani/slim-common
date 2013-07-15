@@ -46,4 +46,6 @@ $app->hook('slim.after', function() use ($app) {
   }
 });
 // Add API functionality
-require(ROOT.'/common/api.php');
+if (config('use.api', false)) {
+  require(ROOT.'/common/api.php');
+}

@@ -145,8 +145,8 @@ class SlimModel extends Model {
         $this->disperse($collection);
       } else {
         $this->hydrate($collection, $data[$collection]);
-        unset($data[$collection]);
       }
+      unset($data[$collection]); 
     }
   }
 

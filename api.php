@@ -43,6 +43,8 @@ class ApiMiddleware extends \Slim\Middleware {
       }
       $res['Content-Type'] = 'application/json';
       $result = array('error' => $e->getMessage());
+      $log = $app->getLog();
+      $log->debug($e->getTraceAsString());
       if ($e instanceof AccessException) {
         $res->status($e->getCode());
       } else {
