@@ -307,8 +307,6 @@ class Bcrypt {
  * @return String CSRF nonce
  */
 function csrf($regenerate = false) {
-  global $log;
-  error_log('csrf');
   if ($regenerate || empty($_SESSION['csrf']) || !verify_csrf($_SESSION['csrf'])) {
     $_SESSION['csrf'] = nonce('csrf');
   }
@@ -332,6 +330,13 @@ function verify_csrf($token = null) {
 function assert_verified_csrf($token = null) {
   if (!verify_csrf($token)) {
     throw new Exception("Invalid CSRF token");
+  }
+}
+
+function assert_can_edit($data, $msg = null, $code = null) {
+  $arr = (array) $data;
+  if ($arr['user_id'] !== current_user()->id && !current_user_can('super')) {
+    throw new AccessException($msg, $code);
   }
 }
 

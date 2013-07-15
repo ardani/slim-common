@@ -8,6 +8,8 @@ ORM::configure('logging', config('log.level', 0) >= 4);
 
 class SlimModel extends Model {
 
+  private $_collections = array();
+
   static function &getBy($field, $val, $flush = false) {
     if (is_null($field)) {
       throw new Exception("Arg #1 must be defined");
@@ -60,6 +62,100 @@ class SlimModel extends Model {
    */
   function encode() {
     return $this->as_array();
+  }
+
+  /**
+   * Push $value onto a collection named $collection
+   * @param String $collection
+   * @param mixed $value
+   */
+  function push($collection, $value) {
+    if (empty($this->_collections[$collection])) {
+      $this->_collections[$collection] = array();
+    }
+    $this->_collections[$collection][] = $value;
+  }
+
+  /**
+   * The given collection should be emptied on next save.
+   * @param String $collection The collection to disperse
+   */
+  function disperse($collection) {
+    $this->_collections[$collection] = false;
+  }
+
+  /**
+   * Should the given collection be emptied on next save?
+   * @param String $collection The collection to test
+   */   
+  function dispersed($collection) {
+    return array_key_exists($collection, $this->_collections) && $this->_collections[$collection] === false;
+  }
+
+  function pop($collection) {
+    if (empty($this->_collections[$collection])) {
+      $this->_collections[$collection] = array();
+    }
+    return array_pop($this->_collections[$collection]);
+  }
+
+  function shift($collection) {
+    if (empty($this->_collections[$collection])) {
+      $this->_collections[$collection] = array();
+    }
+    return array_shift($this->_collections[$collection]);
+  }
+
+  function unshift($collection) {
+    if (empty($this->_collections[$collection])) {
+      $this->_collections[$collection] = array();
+    }
+    return array_unshift($this->_collections[$collection]);
+  }
+
+  function count($collection) {
+    return !empty($this->_collections[$collection]) ? count($this->_collections[$collection]) : false;
+  }
+
+  function collection($collection) {
+    return !empty($this->_collections[$collection]) ? $this->_collections[$collection] : false;
+  }
+
+  function hydrate($collection, $value = null) {
+    if (is_null($value)) {
+      return parent::hydrate($collection);
+    } else {
+      if (!is_array($value)) {
+        $value = array($value);
+      }
+      $this->_collections[$collection] = $value;
+    }
+  }
+
+  /**
+   * Look in $data at position $collection for an array of data.
+   * If data is found, hydrate that collection with the data (drop
+   * any existing data from memory and replace it with the new
+   * values). If the value at $collection in $data is equal to
+   * false, then the collection will be emptied.
+   */
+  function collect($collection, &$data = array(), $disperse = true) {
+    if (array_key_exists($collection, $data)) {
+      if ($data[$collection] === false || count($data[$collection]) === 0) {
+        $this->disperse($collection);
+      } else {
+        $this->hydrate($collection, $data[$collection]);
+        unset($data[$collection]);
+      }
+    }
+  }
+
+  function as_array() {
+    $data = parent::as_array();
+    foreach($this->_collections as $collection => $values) {
+      $data[$collection] = $values;
+    }
+    return $data;
   }
 
   /**

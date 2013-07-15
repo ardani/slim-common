@@ -5,13 +5,18 @@
  */
 class ApiMiddleware extends \Slim\Middleware {
   private static $result;
+  private static $disabled = true;
+  
   static function result($result) {
     self::$result = $result;
   }
 
-  private static $disabled = false;
   static function disable() {
     self::$disabled = true;
+  }
+
+  static function enable() {
+    self::$disabled = false;
   }
 
   function call() {
@@ -72,8 +77,10 @@ $app->add(new ApiMiddleware());
 
 // Setup generic model access: GET, POST, PUT and DELETE
 $app->map('/api/:model(/:id(/:function)?)?', function($model, $id = false, $function = false) use ($app) {
-  $req = $app->request();
+  ApiMiddleware::enable();
 
+  $req = $app->request();
+  
   if ($id !== false && !is_numeric($id)) {
     $function = $id;
     $id = false;
@@ -143,5 +150,3 @@ $app->get('/api', function() use ($app) {
   ApiMiddleware::disable();
   $app->render('api.php', array('pageTitle' => 'API Documentation'));
 });
-
-$app->run();

@@ -45,3 +45,5 @@ $app->hook('slim.after', function() use ($app) {
     $app->getLog()->debug($entry);
   }
 });
+// Add API functionality
+require(ROOT.'/common/api.php');
