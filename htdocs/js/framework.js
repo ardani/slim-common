@@ -179,6 +179,10 @@ $.views = $.views || { helpers: {} };
     }
   });
 
+  window.has_session = function() {
+    return window.current_user;
+  };
+
   $.views.helpers({
 
     /**

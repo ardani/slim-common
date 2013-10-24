@@ -110,7 +110,11 @@ $app->map('/api/:model(/:id(/:function)?)?', function($model, $id = false, $func
   } else {
     $instance = Model::factory(ucwords($model))->create();
   }
-  
+
+  if ($instance instanceof PrivateModel) {
+    throw new Exception("This model is not public");
+  }
+
   if ($req->isGet()) {
     if (!$function) {
       return ApiMiddleware::result( $instance );  
