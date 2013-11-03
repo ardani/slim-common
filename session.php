@@ -25,24 +25,113 @@ class RoleUser extends SlimModel {}
 
 class User extends SlimModel {
 
-  // role cache
-  private $_roles = false;
+  protected $_roles = false;
+  protected $_prefs = false;
+  protected $_settings = false;
 
-  static function _register($userdata) {
+  static function _startLoginSession($userdata) {
+    try {
+      unset($userdata->password);
+      $user = self::_register($userdata, true);
+    } catch (EmailAddressAlreadyRegisteredException $e) {
+      $user = Model::factory('User')->where('email_address', $userdata->email_address)->find_one();
+      if (!$user) {
+        // hmm... double exception: we found an user, and then
+        // we couldn't find the user
+        throw new Exception("Oops! Something strange happened. Please try again.");
+      }
+    }
+
+    return $user->startLoginSession();
+  }
+
+  /**
+   * Generate a key suitable for authentication with a timeout 
+   * specified in minutes, then e-mail that key to this user.
+   * @param int Number of minutes user has to login with key
+   */
+  function startLoginSession($window = 5) {
+    if ($window < 1) {
+      throw new Exception("Invalid window size: must be greater than 0 minutes.");
+    }
+
+    // start with random unique string
+    $random = md5(uniqid());
+    // capture the current time
+    $time = time();
+
+    $key = $this->getHash($random, $time, $window)->key;
+
+    Mail::send(array(
+      'to' => $this->email_address,
+      'from' => 'yo@pickfourhq.com',
+      'subject' => sprintf("Here's the link for accessing your account today, %s", date('F j')),
+      'text' => 'slim:login.php'
+    ), array(
+      'link' => 'https://'.$_SERVER['SERVER_NAME'].'/auth/'.$key
+    ));
+  }
+
+  function getHash($random, $time, $window) {
+    $seed = "{$this->id},{$random},{$time},{$window}";
+    $hash = md5(config('auth.salt').$seed);
+    return (object) array(
+      'seed' => $seed,
+      'hash' => $hash,
+      'key' => "{$hash},{$seed}"
+    );
+  }
+
+  static function getBySessionKey($key) {
+    list($hash, $id, $random, $time, $window) = explode(',', $key);
+    if (!$id) {
+      throw new AccessException("Invalid login: ID is missing");
+    }
+    if (!$user = self::getBy('id', $id)) {
+      throw new AccessException("Invalid login: User does not exist by ID [{$id}]");
+    }
+    if (!$user->isSessionKeyValid($key)) {
+      throw new AccessException("Invalid login: Bad session key");
+    }
+    return $user;
+  }
+
+  function isSessionKeyValid($key) {
+    list($hash, $id, $random, $time, $window) = explode(',', $key);
+    if ($this->id != $id) {
+      return false;
+    }
+    if (!($hash && $random && $time && $window)) {
+      return false;
+    }
+    if ( (time() - $time)/60 > $window ) {
+      return false;
+    }
+    if ($hash != $this->getHash($random, $time, $window)->hash) {
+      return false;
+    }
+    return true;
+  }
+
+  static function _register($userdata, $generate_password = false) {
     $userdata = (object) $userdata;
     // validation
     if (!isset($userdata->email_address)) {
       throw new Exception("E-mail address is required");
     }
     if (!isset($userdata->password)) {
-      throw new Exception("Password is required");
+      if ($generate_password) {
+        $userdata->password = md5(uniqid().config('auth.salt'));
+      } else {
+        throw new Exception("Password is required");
+      }
     }
     if (strlen($userdata->password) < 8) {
       throw new Exception("Password is too short: please use at least 8 characters");
     }
     // is email_address available?
     if (self::isEmailAddressRegistered($userdata->email_address)) {
-      throw new Exception("That e-mail address is already registered");
+      throw new EmailAddressAlreadyRegisteredException("That e-mail address is already registered");
     }
 
     $newUser = Model::factory(get_called_class())->create();
@@ -64,6 +153,7 @@ class User extends SlimModel {
     $data = parent::encode();
     unset($data['password']);
     $data['roles'] = $this->getRoles(true);
+    $data['prefs'] = $this->getPrefs(true);
     return $data;
   }
 
@@ -92,6 +182,102 @@ class User extends SlimModel {
     set_session($user, isset($userdata->remember) ? $userdata->remember : false);
 
     return $user;
+  }
+
+  function getPrefs($flush = false) {
+    if ($this->_prefs === false || $flush) {
+      $this->_prefs = array();
+      foreach($this->getSettings() as $setting) {
+        if (strpos($setting->name, 'pref_') === 0) {
+          $this->_prefs[substr($setting->name, 5)] = $setting->value;
+        }
+      }
+    }
+    return $this->_prefs;
+  }
+
+  function __wakeup() {
+    $this->_prefs = false;
+    $this->_settings = false;
+    $this->_roles = false;
+  }
+
+  function getSettings($flush = false) {
+    if ($this->_settings === false || $flush) {
+      $this->_settings = array();
+      foreach($this->settings()->find_many() as $setting) {
+        $this->_settings[] = (object) array(
+          'name' => $setting->name,
+          'value' => maybe_unserialize($setting->value)
+        );
+      }
+    }
+    return $this->_settings;
+  }
+
+  function settings() {
+    return $this->has_many('UserSetting');
+  }
+
+  static function _prefs($prefs, $app) {
+    if (!has_session()) {
+      throw new AccessException();
+    }
+
+    if ($app->request()->isGet()) {
+      return current_user()->getPrefs(true);
+    }
+
+    if ($app->request()->isPost()) {
+      // preferences are set by the client, so we allow pretty much
+      // anything to be stored there - don't forget this!
+      // it's really designed for storing flags, like whether or not
+      // a particular screen or message has been seen before
+      foreach($prefs as $pname => $value) {
+        $name = 'pref_'.trim($pname);
+        if (strlen($name) > UserSetting::MAX_NAME_LENGTH) {
+          throw new Exception("Preference name [{$pname}] is too long");
+        }
+        if (!preg_match('/^[\w_-]+$/', $name)) {
+          throw new Exception("Invalid preference name [{$pname}] is too long"); 
+        }
+        ORM::raw_execute("
+          INSERT INTO user_setting (
+            `user_id`,
+            `name`,
+            `value`
+          ) VALUES (
+            ?, ?, ?
+          ) ON DUPLICATE KEY UPDATE
+            `user_id` = VALUES(`user_id`),
+            `name` = VALUES(`name`),
+            `value` = VALUES(`value`)        
+        ", array(
+          current_user()->id,
+          $name,
+          maybe_serialize($value)
+        ));
+      }
+    }
+
+    if ($app->request()->isDelete()) {
+
+      foreach($prefs as $pname => $value) {
+        $name = 'pref_'.trim($pname);
+        ORM::raw_execute("
+          DELETE FROM user_setting 
+          WHERE
+            `user_id` = ?
+            AND `name` = ?
+          LIMIT 1
+        ", array(
+          current_user()->id,
+          $name
+        ));
+      }
+    }
+
+    
   }
 
    /**
@@ -180,6 +366,12 @@ class User extends SlimModel {
     }  
   }
   */
+}
+
+class UserSetting extends SlimModel implements PrivateModel {
+
+  const MAX_NAME_LENGTH = 64;
+
 }
 
 /**
@@ -335,7 +527,7 @@ function assert_verified_csrf($token = null) {
 
 function assert_can_edit($data, $msg = null, $code = null) {
   $arr = (array) $data;
-  if ($arr['user_id'] !== current_user()->id && !current_user_can('super')) {
+  if (( empty($arr['user_id']) || $arr['user_id'] !== current_user()->id ) && !current_user_can('super')) {
     throw new AccessException($msg, $code);
   }
 }
@@ -474,3 +666,5 @@ class AccessException extends Exception {
   }
 
 }
+
+class EmailAddressAlreadyRegisteredException extends Exception {}

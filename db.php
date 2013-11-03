@@ -48,6 +48,39 @@ class SlimModel extends Model {
   }
 
   /**
+   * Override this function to provide for the default browsing
+   * endpoint for any model, e.g., "api/(model)"
+   * @return array
+   */
+  function _list($args) {
+    if (!isset($args['user_id'])) {
+      $args['user_id'] = current_user()->id;
+    } else {
+      assert_can_edit($args);
+    }
+
+    if (empty($args['limit'])) {
+      $args['limit'] = 20;
+    }
+    if (!empty($args['limit']) && empty($args['offset'])) {
+      $args['offset'] = 0;
+    }
+
+    $list = Model::factory(get_called_class())
+      ->where('user_id', $args['user_id'])
+      ->order_by_desc('utc_date_created')
+      ->limit($args['limit'])
+      ->offset($args['offset'])
+      ->find_many();
+
+    foreach($list as $model) {
+      $model->onLoad();
+    }
+    
+    return $list;
+  }
+
+  /**
    * This function is called by SlimModel::apply
    */
   function flush() {
@@ -159,15 +192,6 @@ class SlimModel extends Model {
   }
 
   /**
-   * Override this function to provide for the default browsing
-   * endpoint for any model, e.g., "api/(model)"
-   * @return array
-   */
-  function _list($args) {
-    return parse_args($args);
-  }
-
-  /**
    * Override this function to filter data that is applied to
    * this model by SlimModel::apply
    */
@@ -208,6 +232,33 @@ class SlimModel extends Model {
   }
 
 }
+
+/**
+ * Just like a SlimModel except user ownership is asserted and
+ * two fields, utc_date_created and utc_date_updated, must be
+ * available, and are automatically managed.
+ */
+class UserOwnedModel extends SlimModel {
+
+  function beforeApply($data) {
+    // either user_id isn't supplied, or the specified user_id is allowed to edit
+    !empty($data['user_id']) && assert_can_edit($data);
+    return $data;
+  }
+
+  function beforeSave() {
+    if (!$this->id()) {
+      if (!$this->user_id) {
+        $this->user_id = current_user()->id;
+      }
+      $this->utc_date_created = date('Y-m-d H:i:s');
+    }
+    $this->utc_date_updated = date('Y-m-d H:i:s');
+  }
+
+}
+
+interface PrivateModel {}
 
 /**
  * lib autoloader, looks in ROOT/lib then ROOT/common/lib
