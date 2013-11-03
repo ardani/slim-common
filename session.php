@@ -65,10 +65,10 @@ class User extends SlimModel {
     Mail::send(array(
       'to' => $this->email_address,
       'from' => 'yo@pickfourhq.com',
-      'subject' => sprintf("Here's the link for accessing your sessions today, %s", date('F j')),
+      'subject' => sprintf("Here's the link for accessing your account today, %s", date('F j')),
       'text' => 'slim:login.php'
     ), array(
-      'link' => 'http://'.$_SERVER['SERVER_NAME'].'/auth/'.$key
+      'link' => 'https://'.$_SERVER['SERVER_NAME'].'/auth/'.$key
     ));
   }
 
