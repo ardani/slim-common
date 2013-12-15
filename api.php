@@ -66,7 +66,6 @@ class ApiMiddleware extends \Slim\Middleware {
       $result = self::prepForEncoding(self::$result);
       $res->status(200);
     } catch (Exception $e) {
-      throw $e;
       if ($e instanceof PDOException) {
         $log = $app->getLog();
         foreach(ORM::get_query_log() as $entry) {
