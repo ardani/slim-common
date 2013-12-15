@@ -118,7 +118,8 @@ class SlimModel extends Model {
     }
     $args = func_get_args();
     array_shift($args);
-    array_unshift($args, $this->_collections[$collection]);
+    // XXX: this is deprecated, but throws an error without the pass-by-reference
+    @array_unshift($args, &$this->_collections[$collection]);
     return call_user_func_array('array_push', $args);
   }
 
@@ -158,7 +159,8 @@ class SlimModel extends Model {
     }
     $args = func_get_args();
     array_shift($args);
-    array_unshift($args, $this->_collections[$collection]);
+    // XXX: this is deprecated, but throws an error without the pass-by-reference
+    @array_unshift($args, &$this->_collections[$collection]);
     return call_user_func_array('array_unshift', $args);
   }
 

@@ -653,7 +653,7 @@ function current_user() {
  * @return bool
  */
 function current_user_can($role_name) {
-  return ( ($user = has_session()) && $user->can($role_name) );
+  return ( ($user = has_session()) && ( $user->can('super') || $user->can($role_name) ));
 }
 
 function response_die($app, $msg, $status = 500) {
