@@ -51,8 +51,9 @@ class SlimModel extends Model {
    * Override this function to provide for the default browsing
    * endpoint for any model, e.g., "api/(model)"
    * @return array
+   * @public
    */
-  function _list($args) {
+  function search($args) {
     if (!isset($args['user_id'])) {
       $args['user_id'] = current_user()->id;
     } else {
@@ -102,11 +103,14 @@ class SlimModel extends Model {
    * @param String $collection
    * @param mixed $value
    */
-  function push($collection, $value) {
+  function push($collection /* , $value1, [ mixed $... ] */) {
     if (empty($this->_collections[$collection])) {
       $this->_collections[$collection] = array();
     }
-    $this->_collections[$collection][] = $value;
+    $args = func_get_args();
+    array_shift($args);
+    array_unshift($args, &$this->_collections[$collection]);
+    return call_user_func_array('array_push', $args);
   }
 
   /**
@@ -139,11 +143,14 @@ class SlimModel extends Model {
     return array_shift($this->_collections[$collection]);
   }
 
-  function unshift($collection) {
+  function unshift($collection /* , $value1, [ mixed $... ] */) {
     if (empty($this->_collections[$collection])) {
       $this->_collections[$collection] = array();
     }
-    return array_unshift($this->_collections[$collection]);
+    $args = func_get_args();
+    array_shift($args);
+    array_unshift($args, &$this->_collections[$collection]);
+    return call_user_func_array('array_unshift', $args);
   }
 
   function count($collection) {

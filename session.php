@@ -29,7 +29,10 @@ class User extends SlimModel {
   protected $_prefs = false;
   protected $_settings = false;
 
-  static function _startLoginSession($userdata) {
+  /**
+   * @public
+   */
+  static function startLoginSession($userdata) {
     try {
       unset($userdata->password);
       $user = self::_register($userdata, true);
@@ -42,7 +45,7 @@ class User extends SlimModel {
       }
     }
 
-    return $user->startLoginSession();
+    return $user->startUserLoginSession();
   }
 
   /**
@@ -50,7 +53,7 @@ class User extends SlimModel {
    * specified in minutes, then e-mail that key to this user.
    * @param int Number of minutes user has to login with key
    */
-  function startLoginSession($window = 5) {
+  function startUserLoginSession($window = 5) {
     if ($window < 1) {
       throw new Exception("Invalid window size: must be greater than 0 minutes.");
     }
@@ -113,7 +116,10 @@ class User extends SlimModel {
     return true;
   }
 
-  static function _register($userdata, $generate_password = false) {
+  /**
+   * @public
+   */
+  static function register($userdata, $generate_password = false) {
     $userdata = (object) $userdata;
     // validation
     if (!isset($userdata->email_address)) {
@@ -157,7 +163,10 @@ class User extends SlimModel {
     return $data;
   }
 
-  static function _login($userdata) {
+  /**
+   * @public
+   */
+  static function login($userdata) {
     global $current_user;
 
     $userdata = (object) $userdata;
@@ -219,7 +228,10 @@ class User extends SlimModel {
     return $this->has_many('UserSetting');
   }
 
-  static function _prefs($prefs, $app) {
+  /**
+   * @public
+   */
+  static function prefs($prefs, $app) {
     if (!has_session()) {
       throw new AccessException();
     }

@@ -19,6 +19,37 @@ class ApiMiddleware extends \Slim\Middleware {
     self::$disabled = false;
   }
 
+  private static $reflections = array();
+
+  /**
+   * Look for the presence of @public in the doc comment of the method given.
+   * @param String The class to test
+   * @param String The method to test
+   * @return true if the method has @public, otherwise false
+   * @throws Exception if method does not exist
+   */
+  static function isCallable($class, $method) {
+    if (empty(self::$reflections[$class])) {
+      self::$reflections[$class] = array(
+        'class' => new ReflectionClass($class)
+      );
+    }
+    if (empty(self::$reflections[$class]['methods'][$method])) {
+      try {
+        self::$reflections[$class]['methods'][$method] = self::$reflections[$class]['class']->getMethod($method);
+      } catch (Exception $e) {
+        self::$reflections[$class]['methods'][$method] = false;
+      }
+    }
+    if (self::$reflections[$class]['methods'][$method] === false) {
+      throw new Exception("Method does not exist: {$class}::{$method}");
+    }
+    if (empty(self::$reflections[$class]['doc'][$method])) {
+      self::$reflections[$class]['doc'][$method] = self::$reflections[$class]['methods'][$method]->getDocComment();
+    }
+    return strpos(self::$reflections[$class]['doc'][$method], '@public') !== false;
+  }
+
   function call() {
     $app = $this->app;
     $res = $app->response();
@@ -35,6 +66,7 @@ class ApiMiddleware extends \Slim\Middleware {
       $result = self::prepForEncoding(self::$result);
       $res->status(200);
     } catch (Exception $e) {
+      throw $e;
       if ($e instanceof PDOException) {
         $log = $app->getLog();
         foreach(ORM::get_query_log() as $entry) {
@@ -89,7 +121,7 @@ $app->map('/api/:model(/:id(/:function)?)?', function($model, $id = false, $func
   }
 
   if ($req->isGet() && !$id && !$function) {
-    $function = 'list';
+    $function = 'search';
   }
   
   if (!class_exists($model)) {
@@ -142,11 +174,11 @@ $app->map('/api/:model(/:id(/:function)?)?', function($model, $id = false, $func
 
   if ($function) {
     $class = get_class($instance);
-    $callable = array($instance, '_'.$function);
-    if (!is_callable($callable)) {
-      throw new Exception("Invalid method {$class}::_{$function}");
+    if (ApiMiddleware::isCallable($class, $function)) {
+      return ApiMiddleware::result( call_user_func_array(array($class, $function), array($input, $app)) );
+    } else {
+      throw new Exception("Method is private {$class}::{$function}");  
     }
-    return ApiMiddleware::result( call_user_func_array($callable, array($input, $app)) );
   }
 
 })->via('GET', 'POST', 'PUT', 'DELETE');
