@@ -118,7 +118,7 @@ class SlimModel extends Model {
     }
     $args = func_get_args();
     array_shift($args);
-    array_unshift($args, &$this->_collections[$collection]);
+    array_unshift($args, $this->_collections[$collection]);
     return call_user_func_array('array_push', $args);
   }
 
@@ -158,7 +158,7 @@ class SlimModel extends Model {
     }
     $args = func_get_args();
     array_shift($args);
-    array_unshift($args, &$this->_collections[$collection]);
+    array_unshift($args, $this->_collections[$collection]);
     return call_user_func_array('array_unshift', $args);
   }
 
