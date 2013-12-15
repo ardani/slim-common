@@ -48,16 +48,22 @@ class SlimModel extends Model {
   }
 
   /**
+   * @public
    * Override this function to provide for the default browsing
    * endpoint for any model, e.g., "api/(model)"
    * @return array
-   * @public
    */
   function search($args) {
-    if (!isset($args['user_id'])) {
-      $args['user_id'] = current_user()->id;
-    } else {
-      assert_can_edit($args);
+    $class = get_called_class();
+    $model = new $class;
+    $factory = Model::factory($class);
+
+    if ($model instanceof UserOwnedModel) {
+      if (!isset($args['user_id'])) {
+        $args['user_id'] = current_user()->id;
+      } else {
+        assert_can_edit($args);
+      }
     }
 
     if (empty($args['limit'])) {
@@ -67,12 +73,15 @@ class SlimModel extends Model {
       $args['offset'] = 0;
     }
 
-    $list = Model::factory(get_called_class())
-      ->where('user_id', $args['user_id'])
-      ->order_by_desc('utc_date_created')
+    $factory->order_by_desc('utc_date_created')
       ->limit($args['limit'])
-      ->offset($args['offset'])
-      ->find_many();
+      ->offset($args['offset']);
+
+    if ($model instanceof UserOwnedModel) {
+      $factory->where('user_id', $args['user_id']);
+    }
+      
+    $list = $factory->find_many();
 
     foreach($list as $model) {
       $model->onLoad();
