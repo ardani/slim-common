@@ -19,6 +19,7 @@
  * TARGETS....................Page focus targets
  * RAINBOW....................Syntax highlighting
  * TEXT-HELPERS...............
+ * DEMOS......................
  */
 
 
@@ -287,6 +288,20 @@ pre > code {
     padding: 0 4.2em 0 0;
 }
 
+pre > code[data-language]:before {
+    content: attr(data-language);
+    position: absolute;
+    top: 2px;
+    left: 42px;
+    font-size: 10px;
+    opacity: .5;
+    @transition: all .1s;
+    .transition( @transition );
+}
+pre:hover > code[data-language]:before {
+    opacity: 1;
+}
+
 
 
 
@@ -466,6 +481,10 @@ input[type=search] {
     padding: 0;
 }
 
+.menu__list--header {
+    .clearfix;
+}
+
 
 /**
  * Menu links
@@ -501,11 +520,7 @@ input[type=search] {
 
 .menu__item--logo {
     float: left;
-
-    @media ( min-width: @breakpoint-medium ) {
-        float: none;
-        .list-item-inline;
-    }
+    margin-right: 1em;
 
     .menu__link {
         display: block;
@@ -537,8 +552,8 @@ input[type=search] {
 .menu__item--responsive {
 
     @media ( min-width: @breakpoint-medium ) {
-        vertical-align: top;
-        .list-item-inline;
+        float: left;
+        margin-right: 1em;
         &:last-child {
             margin-right: 0;
         }
@@ -860,6 +875,23 @@ input[type=search] {
     color: #585856;
 }
 
+.class,
+.pseudo {
+    color: #68c244;
+}
+
+.css-property {
+    color: @blue;
+}
+
+.css-value {
+    color: #0069bc;
+}
+
+.hex-color {
+
+}
+
 
 
 
@@ -952,6 +984,36 @@ a.text-dimmed {
 }
 .menu__link--dimmed .logocon__u {
     background: @grey-darker;
+}
+
+
+
+
+
+
+/* ==========================================================================
+   $DEMOS
+   ========================================================================== */
+
+// Right-to-left languages
+ #date_demo__translations_rtl + .picker {
+    direction: rtl;
+}
+ #date_demo__translations_rtl + .picker .picker__nav--next {
+    right: auto;
+    left: -1em;
+}
+#date_demo__translations_rtl + .picker .picker__nav--prev {
+    left: auto;
+    right: -1em;
+}
+#date_demo__translations_rtl + .picker .picker__nav--next:before {
+    border-left: 0;
+    border-right: .75em solid #000;
+}
+#date_demo__translations_rtl + .picker .picker__nav--prev:before {
+    border-right: 0;
+    border-left: .75em solid #000;
 }
 
 

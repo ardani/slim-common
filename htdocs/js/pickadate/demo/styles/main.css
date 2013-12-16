@@ -17,6 +17,7 @@
  * TARGETS....................Page focus targets
  * RAINBOW....................Syntax highlighting
  * TEXT-HELPERS...............
+ * DEMOS......................
  */
 /* ==========================================================================
    $IMPORTS
@@ -681,6 +682,20 @@ pre > code {
   background: none;
   padding: 0 4.2em 0 0;
 }
+pre > code[data-language]:before {
+  content: attr(data-language);
+  position: absolute;
+  top: 2px;
+  left: 42px;
+  font-size: 10px;
+  opacity: .5;
+  -webkit-transition: all 0.1s;
+  -moz-transition: all 0.1s;
+  transition: all 0.1s;
+}
+pre:hover > code[data-language]:before {
+  opacity: 1;
+}
 /* ==========================================================================
    $FORM-ELEMENTS
    ========================================================================== */
@@ -842,6 +857,14 @@ input[type=search] {
   list-style: none;
   padding: 0;
 }
+.menu__list--header:before,
+.menu__list--header:after {
+  content: " ";
+  display: table;
+}
+.menu__list--header:after {
+  clear: both;
+}
 /**
  * Menu links
  */
@@ -870,13 +893,7 @@ input[type=search] {
  */
 .menu__item--logo {
   float: left;
-}
-@media (min-width: 46.25em) {
-  .menu__item--logo {
-    float: none;
-    display: inline-block;
-    margin-right: 1em;
-  }
+  margin-right: 1em;
 }
 .menu__item--logo .menu__link {
   display: block;
@@ -910,8 +927,7 @@ input[type=search] {
 }
 @media (min-width: 46.25em) {
   .menu__item--responsive {
-    vertical-align: top;
-    display: inline-block;
+    float: left;
     margin-right: 1em;
   }
   .menu__item--responsive:last-child {
@@ -1185,6 +1201,16 @@ input[type=search] {
 .operator {
   color: #585856;
 }
+.class,
+.pseudo {
+  color: #68c244;
+}
+.css-property {
+  color: #0089ec;
+}
+.css-value {
+  color: #0069bc;
+}
 /* ==========================================================================
    $TEXT-HELPERS
    ========================================================================== */
@@ -1260,4 +1286,26 @@ a.text-dimmed {
 }
 .menu__link--dimmed .logocon__u {
   background: #bfbfbf;
+}
+/* ==========================================================================
+   $DEMOS
+   ========================================================================== */
+#date_demo__translations_rtl + .picker {
+  direction: rtl;
+}
+#date_demo__translations_rtl + .picker .picker__nav--next {
+  right: auto;
+  left: -1em;
+}
+#date_demo__translations_rtl + .picker .picker__nav--prev {
+  left: auto;
+  right: -1em;
+}
+#date_demo__translations_rtl + .picker .picker__nav--next:before {
+  border-left: 0;
+  border-right: .75em solid #000;
+}
+#date_demo__translations_rtl + .picker .picker__nav--prev:before {
+  border-right: 0;
+  border-left: .75em solid #000;
 }

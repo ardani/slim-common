@@ -109,6 +109,7 @@ module.exports = function( grunt ) {
                 },
                 files: [
                     { '<%= pkg.name %>.jquery.json': 'package.json' },
+                    { 'bower.json': 'package.json' },
                     { 'README.md': '<%= dirs.src.raw %>/README.md' },
                     { 'LICENSE.md': '<%= dirs.src.raw %>/LICENSE.md' },
                     { 'CHANGELOG.md': '<%= dirs.src.raw %>/CHANGELOG.md' },
@@ -135,7 +136,8 @@ module.exports = function( grunt ) {
                     '<%= dirs.dest.themes %>/default.date.css': [ '<%= dirs.src.themes %>/base.date.less', '<%= dirs.src.themes %>/default.date.less' ],
                     '<%= dirs.dest.themes %>/default.time.css': [ '<%= dirs.src.themes %>/base.time.less', '<%= dirs.src.themes %>/default.time.less' ],
                     '<%= dirs.dest.themes %>/classic.date.css': [ '<%= dirs.src.themes %>/base.date.less', '<%= dirs.src.themes %>/classic.date.less' ],
-                    '<%= dirs.dest.themes %>/classic.time.css': [ '<%= dirs.src.themes %>/base.time.less', '<%= dirs.src.themes %>/classic.time.less' ]
+                    '<%= dirs.dest.themes %>/classic.time.css': [ '<%= dirs.src.themes %>/base.time.less', '<%= dirs.src.themes %>/classic.time.less' ],
+                    '<%= dirs.dest.themes %>/rtl.css': [ '<%= dirs.src.themes %>/rtl.less' ]
                 }
             }
         },
@@ -216,6 +218,7 @@ module.exports = function( grunt ) {
             quick: {
                 files: [
                     '<%= dirs.src.raw %>/*.htm',
+                    '<%= dirs.src.raw %>/*.md',
                     '<%= dirs.src.demos %>/styles/*.less', '<%= dirs.src.demos %>/scripts/*.js',
                     '<%= dirs.src.pickers %>/**/*.js', '<%= dirs.src.pickers %>/themes/*.css',
                     '<%= dirs.src.themes %>/*.less',

@@ -1,5 +1,56 @@
-
 # Changelog
+
+## 3.3.1
+
+- [#260](https://github.com/amsul/pickadate.js/issues/260): Fixed border from preventing picker from opening.
+- [#248](https://github.com/amsul/pickadate.js/issues/248): Added option to enable dates/times disabled within a range.
+- [#255](https://github.com/amsul/pickadate.js/issues/255): Added traditional Chinese.
+- [#249](https://github.com/amsul/pickadate.js/issues/249) & [#120](https://github.com/amsul/pickadate.js/issues/120): Fixed jQuery Mobile and MagnificPopup click issues.
+- [#247](https://github.com/amsul/pickadate.js/issues/247): Fixed setting min limit on time picker.
+- [#278](https://github.com/amsul/pickadate.js/issues/278) & [#285](https://github.com/amsul/pickadate.js/issues/285): Fixed Firefox and IE bug for finding `activeElement`.
+- [#279](https://github.com/amsul/pickadate.js/issues/279): Added option to `set` things with [muted callbacks](http://amsul.ca/pickadate.js/api.htm#muted-callbacks).
+- Fixed French translations capitalization.
+- Fixed time picker scrolling.
+- Added setting a [time using a native JavaScript date objects](http://amsul.ca/api.htm#method-set-select-time).
+- Added option to keep an [editable `input`](http://amsul.ca/date.htm#editable) element.
+
+
+## 3.3.0
+
+- [#238](https://github.com/amsul/pickadate.js/issues/238): Improved disabled dates validation.
+- [#236](https://github.com/amsul/pickadate.js/issues/236): Fixed transparency issue in IE8 on XP.
+- [#159](https://github.com/amsul/pickadate.js/issues/159): Added functionality to reset disabled dates/times.
+- [#232](https://github.com/amsul/pickadate.js/issues/232): Dropdown styling tweaked.
+- [#197](https://github.com/amsul/pickadate.js/issues/197): Fixed issue with forms not submitting on Firefox.
+- [#230](https://github.com/amsul/pickadate.js/issues/230): Fixed issue with selected time scrolling into view.
+- [#208](https://github.com/amsul/pickadate.js/issues/208) & [#209](https://github.com/amsul/pickadate.js/issues/209): Added `hiddenPrefix` option for hidden input element’s name attribute.
+- [#130](https://github.com/amsul/pickadate.js/issues/130): Fixed issue with passing focus to an element with custom jQuery builds.
+- [#246](https://github.com/amsul/pickadate.js/issues/246) & [#242](https://github.com/amsul/pickadate.js/issues/242): Resolved jQuery conflict.
+- [#247](https://github.com/amsul/pickadate.js/issues/247): Fixed issue with time picker intervals and the min selectable time.
+- Added option to disabled/enable dates using JavaScript Date objects.
+- Tweaked functionality in enabling/disabling dates and times.
+- Improved support for RTL languages and keyboard navigation.
+- Added `rtl.css` for styling RTL languages appropriatey.
+
+
+## 3.2.2
+
+- [#216](https://github.com/amsul/pickadate.js/issues/216): Added generic Arabic translations.
+- [#210](https://github.com/amsul/pickadate.js/issues/210): Fixed jQuery conflict in picker extension files.
+- [#223](https://github.com/amsul/pickadate.js/issues/223): Time picker “disabled” attribute fix.
+- Fixed issue with IE losing key bindings when clicked within picker.
+- Improved delegated click handling on picker elements.
+
+## 3.2.1
+
+- [#210](https://github.com/amsul/pickadate.js/issues/210): Wrapped files using UMD patterns.
+- [#207](https://github.com/amsul/pickadate.js/issues/207): Japanese translations added.
+- Some other slight improvements.
+
+## 3.2.0
+
+- [#178](https://github.com/amsul/pickadate.js/issues/178): Fix for flicker on iOS while changing months.
+- Added `render(true)` option to render full picker or just the “face” ([read more](http://amsul.github.io/pickadate.js/api.htm#method-render)).
 
 ## 3.1.4
 

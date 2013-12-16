@@ -49,7 +49,11 @@ clear: 'Clear',
 // <a href="#formats">Formats</a>
 format: 'd mmmm, yyyy',
 formatSubmit: undefined,
+hiddenPrefix: undefined,
 hiddenSuffix: '_submit',
+
+// <a href="#editable">Editable input</a>
+editable: undefined,
 
 // <a href="#selectors">Dropdown selectors</a>
 selectYears: undefined,
@@ -209,7 +213,19 @@ $('.datepicker').pickadate({
 })</code></pre>
         {%= dateDemoField({ id: 'date_demo__translations' }) %}
 
-        <p>When using translations, make sure to also <a href="#formats">specify the <code>formatSubmit</code> and <code class="attribute">data-value</code></a>.</p>
+        <div class="section__block section__block--notification">
+            <p>When using translations, <a href="#formats">specify the <code>formatSubmit</code> and <code class="attribute">data-value</code></a> to ensure the date parses correctly regardless of locale.</p>
+        </div>
+
+        <h3 class="heading heading--divide"><span class="heading__text">RTL languages<a class="heading__anchor" name="translations_rtl" href="#translations_rtl">&sect;</a></span></h3>
+        <p>For right-to-left (RTL) languages you’ll need to switch the arrows and text direction by linking along the <code>rtl.css</code> file:</p>
+
+        <pre class="pre--demo"><code data-language="html">&lt;!-- Add the stylings after the pickadate theme files --&gt;
+&lt;link rel="stylesheet" href="lib/themes/rtl.css"&gt;
+
+&lt;!-- Add the language after the pickadate script files --&gt;
+&lt;script src="lib/translations/ar.js"&gt;&lt;/script&gt;</code></pre>
+        {%= dateDemoField({ id: 'date_demo__translations_rtl' }) %}
 
     </div> <!-- .section__block -->
 
@@ -222,26 +238,27 @@ $('.datepicker').pickadate({
 
         <h2 class="heading heading--divide"><span class="heading__text">Formats<a class="heading__anchor" name="formats" href="#formats">&sect;</a></span></h2>
         <p>Display a human-friendly format and use an alternate one to submit.</p>
-        <p>This is done by creating a new hidden <code class="tag-name">input</code> element with the same <code class="attribute">name</code> attribute as the original and a suffix:</p>
+        <p>This is done by creating a new hidden <code class="tag-name">input</code> element with the same <code class="attribute">name</code> attribute as the original and an optional prefix/suffix:</p>
 
         <pre class="pre--demo"><code data-language="javascript">$('.datepicker').pickadate({
-    // Escape any “<a href="#formatting-rules">rule</a>” characters with an exclamation mark (!).
+    // Escape any <a href="#formatting-rules">“rule” characters</a> with an exclamation mark (!).
     format: 'You selecte!d: dddd, dd mmm, yyyy',
     formatSubmit: 'yyyy/mm/dd',
-    hiddenSuffix: '--submit'
+    hiddenPrefix: 'prefix__',
+    hiddenSuffix: '__suffix'
 })</code></pre>
 
-        {%= dateDemoField({ id: 'date_demo__formats--a' }).replace( 'type=text', 'name=date_demo__formats type=text' ) %}
+        {%= dateDemoField({ id: 'date_demo__formats--a' }).replace( 'type=text', 'name=date_input type=text' ) %}
 
-        <p>When using <a href="#translations">translations</a>, the <code class="tag-name">input</code> element should be given a <code class="attribute">data-value</code> attribute formatted using the <code>formatSubmit</code> – the element’s <code class="attribute">value</code> can be left blank. This helps to parse the date into the various languages:</p>
+
+        <h3 class="heading heading--divide"><span class="heading__text">Formatting with translations<a class="heading__anchor" name="formats_translations" href="#formats_translations">&sect;</a></span></h3>
+
+        <p>When using <a href="#translations">translations</a>, the <code class="tag-name">input</code> element should be given a <code class="attribute">data-value</code> attribute formatted using the <code>formatSubmit</code> – the element’s <code class="attribute">value</code> can be left blank. This helps to parse the date into the various languages:</p>
         <pre class="pre--demo"><code data-language="html">&lt;input data-value="2013/04/20"></code></pre>
         {%= dateDemoField({ id: 'date_demo__formats--b' }).replace( 'type=text', 'name=date_demo__formats type=text data-value="2013/04/20"') %}
 
-    </div> <!-- .section__block -->
 
-    <div class="section__block section__block--scoped">
-
-        <h2 class="heading heading--divide"><span class="heading__text">Formatting Rules<a class="heading__anchor" name="formatting-rules" href="#formatting-rules">&sect;</a></span></h2>
+        <h3 class="heading heading--divide"><span class="heading__text">Formatting Rules<a class="heading__anchor" name="formatting-rules" href="#formatting-rules">&sect;</a></span></h3>
         <p>The following rules can be used to format any date:</p>
 
         <table class="table">
@@ -312,6 +329,29 @@ $('.datepicker').pickadate({
 
         <div class="section__block section__block--notification">
             <p><b>*</b> Avoid using the <code>yy</code> format within <code>formatSubmit</code> because it leads to assumptions that could parse inaccurately.</p>
+        </div>
+
+    </div> <!-- .section__block -->
+
+</section> <!-- .section -->
+
+
+<section class="section">
+
+    <div class="section__block section__block--scoped">
+
+        <h2 class="heading heading--divide"><span class="heading__text">Editable input<a class="heading__anchor" name="editable" href="#editable">&sect;</a></span></h2>
+        <p>By default, typing into the input is disabled by giving it a <code class="attribute">readOnly</code> attribute. Doing so ensures that virtual keyboards don’t pop open on touch devices. It is also a confirmation that formats passed to the server will be consistent.</p>
+        <p>However, this behavior can be changed using the <code>editable</code> option:</p>
+
+        <pre class="pre--demo"><code data-language="javascript">$('.datepicker').pickadate({
+    editable: true
+})</code></pre>
+
+        {%= dateDemoField({ id: 'date_demo__editable' }) %}
+
+        <div class="section__block section__block--notification">
+            <p>An important thing to note here is that this disables keyboard bindings on the input element, such as arrow keys opening the picker. You will have to add your own bindings as you see fit.</p>
         </div>
 
     </div> <!-- .section__block -->
@@ -413,20 +453,30 @@ $('.datepicker').pickadate({
         <h2 class="heading heading--divide"><span class="heading__text">Disable Dates<a class="heading__anchor" name="disable-dates" href="#disable-dates">&sect;</a></span></h2>
         <p>Disable a specific or arbitrary set of dates selectable on the picker.</p>
 
-        <p><b>1)</b> Using arrays formatted as <code>[YEAR,MONTH,DATE]</code>:</p>
+        <p><b>1)</b> Using JavaScript Date objects:</p>
 
         <pre class="pre--demo"><code data-language="javascript">$('.datepicker').pickadate({
     disable: [
-        [2013,3,3],
-        [2013,3,12],
-        [2013,3,20],
-        [2013,3,29]
+        new Date(2013,3,13),
+        new Date(2013,3,29)
     ]
 })</code></pre>
 
         {%= dateDemoField({ id: 'date_demo__disable-dates--a' }) %}
 
-        <p><b>2)</b> Using integers representing days of the week (from 1 to 7):</p>
+        <p><b>2)</b> Using arrays formatted as <code>[YEAR,MONTH,DATE]</code>:</p>
+
+        <pre class="pre--demo"><code data-language="javascript">$('.datepicker').pickadate({
+    disable: [
+        [2013,3,3],
+        [2013,3,12],
+        [2013,3,20]
+    ]
+})</code></pre>
+
+        {%= dateDemoField({ id: 'date_demo__disable-dates--b' }) %}
+
+        <p><b>3)</b> Using integers representing days of the week (from 1 to 7):</p>
 
         <pre class="pre--demo"><code data-language="javascript">$('.datepicker').pickadate({
     disable: [
@@ -434,9 +484,9 @@ $('.datepicker').pickadate({
     ]
 })</code></pre>
 
-        {%= dateDemoField({ id: 'date_demo__disable-dates--b' }) %}
+        {%= dateDemoField({ id: 'date_demo__disable-dates--c' }) %}
 
-        <p><b>3)</b> <i><u>Disabling all</u></i> except a specific or arbitrary set of dates by setting <code class="constant">true</code> as the first item in the collection:</p>
+        <p><b>4)</b> <i><u>Disabling all</u></i> except a specific or arbitrary set of dates by setting <code class="constant">true</code> as the first item in the collection:</p>
 
         <pre class="pre--demo"><code data-language="javascript">$('.datepicker').pickadate({
     disable: [
@@ -445,11 +495,24 @@ $('.datepicker').pickadate({
         [2013,3,3],
         [2013,3,12],
         [2013,3,20],
-        [2013,3,29]
+        new Date(2013,3,13),
+        new Date(2013,3,29)
     ]
 })</code></pre>
 
-        {%= dateDemoField({ id: 'date_demo__disable-dates--c' }) %}
+        {%= dateDemoField({ id: 'date_demo__disable-dates--d' }) %}
+
+        <p><b>5)</b> <i>Enabling/disabling ranges with exceptions</i> by passing <code class="string">'inverted'</code> as the last parameter in the item within the collection:</p>
+
+        <pre class="pre--demo"><code data-language="javascript">$('.datepicker').pickadate({
+    disable: [
+        1,
+        [2013, 10, 17, 'inverted']
+    ]
+})</code></pre>
+
+        {%= dateDemoField({ id: 'date_demo__disable-dates--e' }) %}
+
 
     </div> <!-- .section__block -->
 
@@ -462,7 +525,7 @@ $('.datepicker').pickadate({
     <div class="section__block section__block--scoped">
 
         <h2 class="heading heading--divide"><span class="heading__text">container<a class="heading__anchor" name="container" href="#container">&sect;</a></span></h2>
-        <p>Specify where to insert the picker’s root element by passing any valid CSS selector to this option:</p>
+        <p>By default, the picker’s root element is inserted right after the <code class="keyword">input</code> element. Specify where to insert the root element by passing any valid CSS selector to this option:</p>
 
         <div id="root-outlet" style="position:relative"></div>
 
@@ -472,7 +535,9 @@ $('.datepicker').pickadate({
 
         {%= dateDemoField({ id: 'date_demo__container' }) %}
 
-        <p>By default, the picker root is inserted right after the <code class="keyword">input</code> element.</p>
+        <div class="section__block section__block--notification">
+            <p>This is especially important when the <code class="keyword">input</code> falls within a <code class="keyword">label</code> element because click events bubble up to the <code class="keyword">label</code> element and re-open the picker.</p>
+        </div>
 
     </div> <!-- .section__block -->
 

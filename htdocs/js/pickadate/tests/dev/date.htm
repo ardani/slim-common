@@ -47,6 +47,17 @@
             </fieldset>
         </form>
 
+
+        <form method="POST" action="http://google.com">
+            <input type="text">
+            <input type="text">
+            <input type="text">
+            <input type="text">
+            <input type="text">
+            <input class="date" autofocussss>
+            <input type="submit">
+        </form>
+
         <fieldset>
             <input type="text" class="datepickerr">
         </fieldset>
@@ -60,36 +71,42 @@
     </section>
 
 
-    <script src="../jquery.1.9.1.js"></script>
+    <script src="../jquery.1.7.0.js"></script>
     <script src="../../lib/picker.js"></script>
     <script src="../../lib/picker.date.js"></script>
     <script src="../../lib/legacy.js"></script>
 
     <script type="text/javascript">
 
-        var $input = $( '.datepicker' ).pickadate({
-            container: '.outlet',
-            // disable: [ true, [2013,3,1], [2013,6,1] ]
+        var $input = $( /*'.date'*/ '.datepicker' ).pickadate({
+            editable: true,
+            // container: '.outlet',
+            // disable: [ 1, 2, 7, [2013,6,1],[2013,10,12],
+            //     [
+            //         2013,10,10
+            //         // ,'inverted'
+            //     ]
+            // ],
+            selectYears: true,
+            selectMonths: true,
             // format: 'dd mmmm yyyy',
-            // formatSubmit: 'yyyy-mm-dd',
+            formatSubmit: 'yyyy-mm-dd',
             // hiddenSuffix: '-submit',
             // clear: '',
-            // min: new Date(),
-            // selectMonths: true,
+            // min: +2,
+            // max: +30,
             // format: 'mmmm dd, yyyy',
-        })//,
+        })
 
-        // $('.datepickerr').focus( function() {
-        //     picker.open(false)
-        // }).blur( function() {
-        //     picker.close()
-        // })
+        var picker = $input.pickadate('picker')
 
-        // var $button = $( '.button' ).on( 'click', function( event ) {
-        //     event.preventDefault()
-        //     event.stopPropagation()
-        //     picker.close(true)
-        // })
+        picker.on('set', function(selection) {
+            console.log( selection )
+        })
+
+        picker.set('select', new Date())
+        picker.set('select', new Date(), { muted: true })
+        picker.set({ select: new Date() }, { muted: true })
 
     </script>
 

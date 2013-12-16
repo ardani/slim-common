@@ -1,45 +1,8 @@
 /* ==========================================================================
    $BASE-PICKER
    ========================================================================== */
-/* ==========================================================================
-   $VARIABLES
-   ========================================================================== */
 /**
- * Base colors
- */
-/**
- * Backgrounds
- */
-/**
- * Borders
- */
-/**
- * Buttons
- */
-/**
- * Picker base
- */
-/**
- * Date picker options
- */
-/**
- * Theme configurations
- */
-/* ==========================================================================
-   $MIXINS
-   ========================================================================== */
-/**
- * Common picker item states
- */
-/**
- * Opacity
- */
-/**
- * Vendor prefixes
- */
-/**
- * Note: the root picker element should __NOT__ be styled
- * more than what’s here. Style the `.picker__holder` instead.
+ * Note: the root picker element should *NOT* be styled more than what’s here.
  */
 .picker {
   font-size: 16px;
@@ -48,6 +11,10 @@
   color: #000000;
   position: absolute;
   z-index: 10000;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 /**
  * The picker input element.
@@ -72,43 +39,10 @@
 
 /*!
  * Default mobile-first, responsive styling for pickadate.js
- * Demo: http://amsul.github.io/pickadate.js/themes.htm#default
- */
-/* ==========================================================================
-   $VARIABLES
-   ========================================================================== */
-/**
- * Base colors
+ * Demo: http://amsul.github.io/pickadate.js
  */
 /**
- * Backgrounds
- */
-/**
- * Borders
- */
-/**
- * Buttons
- */
-/**
- * Picker base
- */
-/**
- * Date picker options
- */
-/**
- * Theme configurations
- */
-/* ==========================================================================
-   $MIXINS
-   ========================================================================== */
-/**
- * Common picker item states
- */
-/**
- * Opacity
- */
-/**
- * Vendor prefixes
+ * Note: the root picker element should *NOT* be styled more than what’s here.
  */
 /**
  * Make the holder and frame fullscreen.
