@@ -7,7 +7,7 @@ if (!config('auth.salt')) {
   throw new Exception("Please set auth.salt config var to a strong key");
 }
 
-class Role extends SlimModel {
+class Role extends Model {
 
   static function getOrCreate($name) {
     $factory = Model::factory(get_called_class());
@@ -21,13 +21,27 @@ class Role extends SlimModel {
 
 }
 
-class RoleUser extends SlimModel {}
+class RoleUser extends Model {}
 
-class User extends SlimModel {
+class User extends Model {
 
   protected $_roles = false;
   protected $_prefs = false;
   protected $_settings = false;
+
+  static function load($id, $fields) {
+    $mem = "user:{$id}";
+    if ($user = memget($mem)) {
+      return $user;
+    } 
+    $user = Model::factory(get_called_class())
+      ->where('id', $id)
+      ->find_one();
+    if ($user) {
+      memset($mem, $user);
+    }
+    return $user;
+  }
 
   /**
    * @public
@@ -155,9 +169,10 @@ class User extends SlimModel {
     return $newUser;
   }
 
-  function encode() {
-    $data = parent::encode();
+  function as_array() {
+    $data = parent::as_array();
     unset($data['password']);
+    unset($data['email_address']);
     $data['roles'] = $this->getRoles(true);
     $data['prefs'] = $this->getPrefs(true);
     return $data;
@@ -186,7 +201,8 @@ class User extends SlimModel {
       throw new Exception("Oops! That password is incorrect.");
     }
 
-    $user->apply(array('utc_date_last_login' => date('Y-m-d H:i:s')));
+    $user->utc_date_last_login = date('c', true);
+    $user->save();
     
     set_session($user, isset($userdata->remember) ? $userdata->remember : false);
 
@@ -231,16 +247,19 @@ class User extends SlimModel {
   /**
    * @public
    */
-  static function prefs($prefs, $app) {
+  static function prefs($prefs) {
+    global $app;
+    $req = $app->request();
+
     if (!has_session()) {
       throw new AccessException();
     }
 
-    if ($app->request()->isGet()) {
+    if ($req->isGet()) {
       return current_user()->getPrefs(true);
     }
 
-    if ($app->request()->isPost()) {
+    if ($req->isPost()) {
       // preferences are set by the client, so we allow pretty much
       // anything to be stored there - don't forget this!
       // it's really designed for storing flags, like whether or not
@@ -272,7 +291,7 @@ class User extends SlimModel {
       }
     }
 
-    if ($app->request()->isDelete()) {
+    if ($req->isDelete()) {
 
       foreach($prefs as $pname => $value) {
         $name = 'pref_'.trim($pname);
@@ -289,7 +308,6 @@ class User extends SlimModel {
       }
     }
 
-    
   }
 
    /**
@@ -380,7 +398,7 @@ class User extends SlimModel {
   */
 }
 
-class UserSetting extends SlimModel implements PrivateModel {
+class UserSetting extends Model implements PrivateModel {
 
   const MAX_NAME_LENGTH = 64;
 
@@ -538,8 +556,15 @@ function assert_verified_csrf($token = null) {
 }
 
 function assert_can_edit($data, $msg = null, $code = null) {
-  $arr = (array) $data;
-  if (( empty($arr['user_id']) || $arr['user_id'] !== current_user()->id ) && !current_user_can('super')) {
+  assert_logged_in();
+
+  if ($data instanceof Model) {
+    $arr = $data->as_array();
+  } else {
+    $arr = (array) $data;
+  }
+  $not_current_user = empty($arr['user_id']) || $arr['user_id'] !== current_user()->id;
+  if ( $not_current_user && !current_user_can('super') ) {
     throw new AccessException($msg, $code);
   }
 }
@@ -648,6 +673,12 @@ function current_user() {
   return has_session();
 }
 
+function assert_logged_in($message = null, $code = null) {
+  if (!has_session()) {
+    throw new AccessException($message, $code);
+  }
+}
+
 /**
  * Alias for User::can()
  * @return bool
@@ -669,7 +700,7 @@ class AccessException extends Exception {
 
   function __construct($message = null, $code = null) {
     if (is_null($message)) {
-      $message = 'You are not allowed to access this resource.';
+      $message = 'Forbidden';
     }
     if (is_null($code)) {
       $code = 403;

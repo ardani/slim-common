@@ -22,13 +22,19 @@ class ApiMiddleware extends \Slim\Middleware {
   private static $reflections = array();
 
   /**
-   * Look for the presence of @public in the doc comment of the method given.
+   * Make sure that the method is callable.
+   * The method "search" is always callable.
+   * In all other cases, look for the presence of @public in the doc comment of the method given.
    * @param String The class to test
    * @param String The method to test
-   * @return true if the method has @public, otherwise false
+   * @return bool true if the method is "search" (and it exists) or has @public, otherwise false
    * @throws Exception if method does not exist
    */
   static function isCallable($class, $method) {
+    if ($method === 'search') {
+      return is_callable(array($class, $method));
+    }
+
     if (empty(self::$reflections[$class])) {
       self::$reflections[$class] = array(
         'class' => new ReflectionClass($class)
@@ -88,15 +94,17 @@ class ApiMiddleware extends \Slim\Middleware {
   }
 
   private function prepForEncoding($r) {
-    if ($r instanceof SlimModel) {
-      return $r->encode();
-    } else if ($r instanceof Model) {
-      return $r->as_array();
-    } else if ($r instanceof ORM) {
-      return $r->as_array();
+    if ($r instanceof Model || $r instanceof ORM) {
+      return self::prepForEncoding($r->as_array());
     } else if (is_array($r)) {
       $array = array();
       foreach($r as $i => $value) {
+        $array[$i] = self::prepForEncoding($value);
+      }
+      return $array;
+    } else if (is_object($r)) {
+      $array = array();
+      foreach(get_object_vars($r) as $i => $value) {
         $array[$i] = self::prepForEncoding($value);
       }
       return $array;
@@ -108,82 +116,84 @@ class ApiMiddleware extends \Slim\Middleware {
 
 $app->add(new ApiMiddleware());
 
-// Setup generic model access: GET, POST, PUT and DELETE
+// Setup generic model access for all relevant request types
 $app->map('/api/:model(/:id(/:function)?)?', function($model, $id = false, $function = false) use ($app) {
   ApiMiddleware::enable();
 
   $req = $app->request();
   
+  // if the class doesn't exist, we're done
+  if (!class_exists($model)) {
+    throw new AccessException('Not found', 403);
+  }
+
+  // if $id is non-numeric, then we treat it as a function name
   if ($id !== false && !is_numeric($id)) {
     $function = $id;
     $id = false;
   }
 
+  // requests made to /api/:model are mapped to a function called "search"
   if ($req->isGet() && !$id && !$function) {
     $function = 'search';
   }
   
-  if (!class_exists($model)) {
-    throw new Exception(sprintf('%s does not exist', ucwords($model)), 404);
-  }
+  // look for the fields arg
+  $fields = $req->isGet() && ($fieldList = $req->get('fields')) ? array_map('trim', explode(',', $fieldList)) : array();
 
+  // if an ID is provided
   if ($id !== false) {
-    if (!has_session()) {
-      throw new AccessException();
+    // try to load the object
+    if (!$instance = call_user_func_array(array(ucwords($model), 'load'), array($id, $fields))) {
+      throw new AccessException('Not found', 404);
     }
-    $instance = call_user_func_array(array(ucwords($model), 'getBy'), array('id', $id));
-    if (!$instance) {
-      throw new Exception(sprintf("%s does not exist for [%d]", ucwords($model), $id), 404);
-    }
-    if (!empty($instance->user_id) && $instance->user_id !== current_user()->id && !current_user_can('super')) {
+    // don't allow access to private models
+    if ($instance instanceof PrivateModel) {
       throw new AccessException();
     }
   } else {
-    $instance = Model::factory(ucwords($model))->create();
+    if (is_subclass_of($model, 'PrivateModel')) {
+      throw new AccessException();
+    }
   }
 
-  if ($instance instanceof PrivateModel) {
-    throw new Exception("This model is not public");
-  }
+  
 
-  if ($req->isGet()) {
-    if (!$function) {
-      return ApiMiddleware::result( $instance );  
-    } 
+  // if no other function is listed, return the instance
+  if ($req->isGet() && !$function) {
+    return ApiMiddleware::result( $instance );  
   }
 
   // allow for JSON input or $_POST
-  $input = $app->request()->headers('CONTENT-TYPE') === 'application/json' ? json_decode(file_get_contents('php://input')) : $app->request()->params();
+  $input = $req->headers('CONTENT-TYPE') === 'application/json' ? (array) json_decode(file_get_contents('php://input')) : $req->params();
 
-  if (has_session()) {
-  
-    if ($req->isPut() || $req->isPost()) {
-      if (!$function) {
-        return ApiMiddleware::result( call_user_func_array(array($instance, 'apply'), array($input)) );
-      }
-    }
+  // create request?
+  if ($req->isPost() && !$function) {
+    return ApiMiddleware::result( call_user_func_array(array($model, 'create'), array($input)) );
+  }
 
-    if ($req->isDelete()) {
-      if ($id !== false) {
-        return ApiMiddleware::result( array('success' => $instance->delete() ) );
-      }
-    }
+  // update request?
+  if ($req->isPut() && !$function) {
+    return ApiMiddleware::result( call_user_func_array(array($instance, 'update'), array($input)) );
+  }
 
+  // delete request?
+  if ($req->isDelete() && $id !== false && !$function) {
+    return ApiMiddleware::result( call_user_func_array(array($model, 'trash'), array($id, $input)) );
   }
 
   if ($function) {
-    $class = get_class($instance);
-    if (ApiMiddleware::isCallable($class, $function)) {
-      return ApiMiddleware::result( call_user_func_array(array($class, $function), array($input, $app)) );
+    if (ApiMiddleware::isCallable($model, $function)) {
+      if ($id !== false) {
+        return ApiMiddleware::result( call_user_func_array(array($instance, $function), array($input)) );
+      } else {
+        return ApiMiddleware::result( call_user_func_array(array($model, $function), array($input)) );
+      }
     } else {
-      throw new Exception("Method is private {$class}::{$function}");  
+      throw new AccessException();
     }
+  } else {
+    throw new AccessException(null, 404);
   }
 
 })->via('GET', 'POST', 'PUT', 'DELETE');
-
-// Setup documentation URL
-$app->get('/api', function() use ($app) {
-  ApiMiddleware::disable();
-  $app->render('api.php', array('pageTitle' => 'API Documentation'));
-});
