@@ -81,7 +81,7 @@ class ApiMiddleware extends \Slim\Middleware {
       $res['Content-Type'] = 'application/json';
       $result = array('error' => $e->getMessage());
       $log = $app->getLog();
-      $log->debug($e->getTraceAsString());
+      $log->debug($e->getMessage()."\n".$e->getTraceAsString());
       if ($e instanceof AccessException) {
         $res->status($e->getCode());
       } else {
@@ -155,9 +155,7 @@ $app->map('/api/:model(/:id(/:function)?)?', function($model, $id = false, $func
     if (is_subclass_of($model, 'PrivateModel')) {
       throw new AccessException();
     }
-  }
-
-  
+  }  
 
   // if no other function is listed, return the instance
   if ($req->isGet() && !$function) {
