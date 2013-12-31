@@ -1,13 +1,14 @@
 // console everywhere!
 window.console = window.console || { log: function(){}, error: function(){} };
 // framework
-!function($, B) { 
+!function($) { 
   
   'use strict';
   
   // jQuery-wrapped window and doc references
   window.$W = $(window);
   window.$D = $(document);
+  window.$B = $('body');
   
   // process any queued "ready" functions
   $(function() {
@@ -98,4 +99,4 @@ window.console = window.console || { log: function(){}, error: function(){} };
     return false;
   }
 
-}(jQuery, Backbone);
+}(jQuery);
