@@ -86,10 +86,13 @@
         /**
          * Factory method, return an instance of this
          * class bound to the supplied table name.
+         *
+         * A repeat of content in parent::for_table, so that
+         * created class is ORMWrapper, not ORM
          */
-        public static function for_table($table_name) {
-            self::_setup_db();
-            return new self($table_name);
+        public static function for_table($table_name, $connection_name = parent::DEFAULT_CONNECTION) {
+            self::_setup_db($connection_name);
+            return new self($table_name, array(), $connection_name);
         }
 
         /**
@@ -121,7 +124,11 @@
          * with this wrapper instead of the raw ORM class.
          */
         public function find_many() {
-            return array_map(array($this, '_create_model_instance'), parent::find_many());
+            $results = parent::find_many();
+            foreach($results as $key => $result) {
+                $results[$key] = $this->_create_model_instance($result);
+            }
+            return $results;
         }
 
         /**
@@ -150,6 +157,15 @@
 
         // Default foreign key suffix used by relationship methods
         const DEFAULT_FOREIGN_KEY_SUFFIX = '_id';
+
+        /**
+         * Set a prefix for model names. This can be a namespace or any other
+         * abitrary prefix such as the PEAR naming convention.
+         * @example Model::$auto_prefix_models = 'MyProject_MyModels_'; //PEAR
+         * @example Model::$auto_prefix_models = '\MyProject\MyModels\'; //Namespaces
+         * @var string
+         */
+        public static $auto_prefix_models = null;
 
         /**
          * The ORM instance used by this model 
@@ -200,7 +216,7 @@
             return strtolower(preg_replace(
                 array('/\\\\/', '/(?<=[a-z])([A-Z])/', '/__/'),
                 array('_', '_$1', '_'),
-                $class_name
+                ltrim($class_name, '\\')
             ));
         }
 
@@ -234,9 +250,18 @@
          * responsible for returning instances of the correct class when
          * its find_one or find_many methods are called.
          */
-        public static function factory($class_name) {
+        public static function factory($class_name, $connection_name = null) {
+            $class_name = self::$auto_prefix_models . $class_name;
             $table_name = self::_get_table_name($class_name);
-            $wrapper = ORMWrapper::for_table($table_name);
+
+            if ($connection_name == null) {
+               $connection_name = self::_get_static_property(
+                   $class_name,
+                   '_connection_name',
+                   ORMWrapper::DEFAULT_CONNECTION
+               );
+            }
+            $wrapper = ORMWrapper::for_table($table_name, $connection_name);
             $wrapper->set_class_name($class_name);
             $wrapper->use_id_column(self::_get_id_column_name($class_name));
             return $wrapper;
@@ -353,9 +378,20 @@
 
         /**
          * Setter method, allows $model->set('property', 'value') access to data.
+         * @param string|array $key
+         * @param string|null $value
          */
         public function set($property, $value = null) {
             $this->orm->set($property, $value);
+        }
+
+        /**
+         * Setter method, allows $model->set_expr('property', 'value') access to data.
+         * @param string|array $key
+         * @param string|null $value
+         */
+        public function set_expr($property, $value = null) {
+            $this->orm->set_expr($property, $value);
         }
 
         /**
@@ -363,6 +399,14 @@
          */
         public function is_dirty($property) {
             return $this->orm->is_dirty($property);
+        }
+
+        /**
+         * Check whether the model was the result of a call to create() or not
+         * @return bool
+         */
+        public function is_new() {
+            return $this->orm->is_new();
         }
 
         /**

@@ -1,7 +1,7 @@
 <?php
 class Mail {
 
-  function send($msg = '', $data = null) {
+  function send($msg = '', $data = array()) {
     global $app;
     $mandrill = new Mandrill(config('mandrill.apikey'));
 
