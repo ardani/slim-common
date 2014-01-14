@@ -1,12 +1,13 @@
 // console everywhere!
 window.console = window.console || { log: function(){}, error: function(){} };
 var common = window.common || {}; common.lib = {};
-// fill in namespace for jsrender
-$.views = $.views || { helpers: {} };
 // framework
-!function($) { 
-  
+!function($, B) { 
+
   'use strict';
+
+  // fill in namespace for jsrender
+  $.views = $.views || { helpers: function(){} };
   
   // jQuery-wrapped window and doc references
   window.$W = $(window);
@@ -153,9 +154,12 @@ $.views = $.views || { helpers: {} };
   }
 
   // TODO: do we need this?
-  Backbone.emulateHTTP = true;
+  B.emulateHTTP = true;
 
-  common.lib.User = _.extend(B.Model.extend({
+  var _ = window._ || { extend: function(){} },
+      Model = B.Model || { extend: function() {} };
+
+  common.lib.User = _.extend(Model.extend({
     url: function() {
       return '/api/user' + ( this.get('id') ? '/' + this.get('id') : '' );
     }
@@ -275,7 +279,7 @@ $.views = $.views || { helpers: {} };
   })(); // end jQuery.fn.sortElements
 
 
-}(jQuery, Backbone);
+}(jQuery, window.Backbone || {});
 
 //fgnass.github.com/spin.js#v1.3
 
