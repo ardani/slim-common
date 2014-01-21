@@ -169,7 +169,7 @@ $app->map('/api/:model(/:id(/:function)?)?', function($model, $id = false, $func
   }
 
   // allow for JSON input or $_POST
-  $input = $req->headers('CONTENT-TYPE') === 'application/json' ? (array) json_decode(file_get_contents('php://input')) : $req->params();
+  $input = $req->headers('CONTENT-TYPE') === 'application/json' ? array_merge($req->params(), (array) json_decode(file_get_contents('php://input'))) : $req->params();
 
   // create request?
   if ($req->isPost() && !$function) {
