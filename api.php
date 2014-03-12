@@ -119,7 +119,6 @@ $app->add(new ApiMiddleware());
 // Setup generic model access for all relevant request types
 $app->map('/api/:model(/:id(/:function)?)?', function($model, $id = false, $function = false) use ($app) {
   ApiMiddleware::enable();
-
   $req = $app->request();
   
   // if the class doesn't exist, we're done
@@ -143,16 +142,23 @@ $app->map('/api/:model(/:id(/:function)?)?', function($model, $id = false, $func
 
   // if an ID is provided
   if ($id !== false) {
+    $load = array(ucwords($model), 'load');
+
+    if (!is_callable($load)) {
+      throw new AccessException('Invalid', 404);
+    }
+
     // try to load the object
-    if (!$instance = call_user_func_array(array(ucwords($model), 'load'), array($id, $fields))) {
+    if (!$instance = call_user_func_array($load, array($id, $fields))) {
       throw new AccessException('Not found', 404);
     }
+  
     // don't allow access to private models
     if ($instance instanceof PrivateModel) {
       throw new AccessException();
     }
   } else {
-    if (is_subclass_of($model, 'PrivateModel')) {
+    if ($model instanceof PrivateModel) {
       throw new AccessException();
     }
   }  
@@ -163,7 +169,7 @@ $app->map('/api/:model(/:id(/:function)?)?', function($model, $id = false, $func
   }
 
   // allow for JSON input or $_POST
-  $input = $req->headers('CONTENT-TYPE') === 'application/json' ? (array) json_decode(file_get_contents('php://input')) : $req->params();
+  $input = $req->headers('CONTENT-TYPE') === 'application/json' ? array_merge($req->params(), (array) json_decode(file_get_contents('php://input'))) : $req->params();
 
   // create request?
   if ($req->isPost() && !$function) {
