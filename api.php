@@ -90,7 +90,7 @@ class ApiMiddleware extends \Slim\Middleware {
     }
 
     // encode
-    $res->write(defined('JSON_PRETTY_PRINT') ? json_encode($result, JSON_PRETTY_PRINT) : json_encode($result));
+    $res->write(defined('JSON_PRETTY_PRINT') ? json_encode($result, JSON_PRETTY_PRINT & JSON_NUMERIC_CHECK) : json_encode($result, JSON_NUMERIC_CHECK));
   }
 
   private function prepForEncoding($r) {
