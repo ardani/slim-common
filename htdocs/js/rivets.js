@@ -1,5 +1,1293 @@
 // Rivets.js
-// version: 0.6.5
+// version: 0.6.7
 // author: Michael Richards
 // license: MIT
-(function(){var a,b=function(a,b){return function(){return a.apply(b,arguments)}},c=[].indexOf||function(a){for(var b=0,c=this.length;c>b;b++)if(b in this&&this[b]===a)return b;return-1},d=[].slice,e={}.hasOwnProperty,f=function(a,b){function c(){this.constructor=a}for(var d in b)e.call(b,d)&&(a[d]=b[d]);return c.prototype=b.prototype,a.prototype=new c,a.__super__=b.prototype,a};a={binders:{},components:{},formatters:{},adapters:{},config:{prefix:"rv",templateDelimiters:["{","}"],rootInterface:".",preloadData:!0,handler:function(a,b,c){return this.call(a,b,c.view.models)}}},a.Util={bindEvent:function(a,b,c){return null!=window.jQuery?(a=jQuery(a),null!=a.on?a.on(b,c):a.bind(b,c)):null!=window.addEventListener?a.addEventListener(b,c,!1):(b="on"+b,a.attachEvent(b,c))},unbindEvent:function(a,b,c){return null!=window.jQuery?(a=jQuery(a),null!=a.off?a.off(b,c):a.unbind(b,c)):null!=window.removeEventListener?a.removeEventListener(b,c,!1):(b="on"+b,a.detachEvent(b,c))},getInputValue:function(a){var b,c,d,e;if(null!=window.jQuery)switch(a=jQuery(a),a[0].type){case"checkbox":return a.is(":checked");default:return a.val()}else switch(a.type){case"checkbox":return a.checked;case"select-multiple":for(e=[],c=0,d=a.length;d>c;c++)b=a[c],b.selected&&e.push(b.value);return e;default:return a.value}}},a.View=function(){function d(c,d,e){var f,g,h,i,j,k,l,m,n;for(this.els=c,this.models=d,this.options=null!=e?e:{},this.update=b(this.update,this),this.publish=b(this.publish,this),this.sync=b(this.sync,this),this.unbind=b(this.unbind,this),this.bind=b(this.bind,this),this.select=b(this.select,this),this.build=b(this.build,this),this.componentRegExp=b(this.componentRegExp,this),this.bindingRegExp=b(this.bindingRegExp,this),this.els.jquery||this.els instanceof Array||(this.els=[this.els]),l=["config","binders","formatters","adapters"],j=0,k=l.length;k>j;j++){if(g=l[j],this[g]={},this.options[g]){m=this.options[g];for(f in m)h=m[f],this[g][f]=h}n=a[g];for(f in n)h=n[f],null==(i=this[g])[f]&&(i[f]=h)}this.build()}return d.prototype.bindingRegExp=function(){return new RegExp("^"+this.config.prefix+"-")},d.prototype.componentRegExp=function(){return new RegExp("^"+this.config.prefix.toUpperCase()+"-")},d.prototype.build=function(){var b,d,e,f,g,h,i,j,k,l=this;for(this.bindings=[],h=[],b=this.bindingRegExp(),e=this.componentRegExp(),d=function(b,c,d,e){var f,g,h,i,j,k,m;return j={},m=function(){var a,b,c,d;for(c=e.split("|"),d=[],a=0,b=c.length;b>a;a++)k=c[a],d.push(k.trim());return d}(),f=function(){var a,b,c,d;for(c=m.shift().split("<"),d=[],a=0,b=c.length;b>a;a++)g=c[a],d.push(g.trim());return d}(),i=f.shift(),j.formatters=m,(h=f.shift())&&(j.dependencies=h.split(/\s+/)),l.bindings.push(new a[b](l,c,d,i,j))},g=function(f){var i,j,k,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M;if(c.call(h,f)<0){if(3===f.nodeType){if(q=a.TextTemplateParser,(n=l.config.templateDelimiters)&&(u=q.parse(f.data,n)).length&&(1!==u.length||u[0].type!==q.types.text)){for(x=0,B=u.length;B>x;x++)t=u[x],s=document.createTextNode(t.value),f.parentNode.insertBefore(s,f),1===t.type&&d("TextBinding",s,null,t.value);f.parentNode.removeChild(f)}}else if(e.test(f.tagName))v=f.tagName.replace(e,"").toLowerCase(),l.bindings.push(new a.ComponentBinding(l,f,v));else if(null!=f.attributes){for(H=f.attributes,y=0,C=H.length;C>y;y++)if(i=H[y],b.test(i.name)){if(v=i.name.replace(b,""),!(k=l.binders[v])){I=l.binders;for(o in I)w=I[o],"*"!==o&&-1!==o.indexOf("*")&&(r=new RegExp("^"+o.replace("*",".+")+"$"),r.test(v)&&(k=w))}if(k||(k=l.binders["*"]),k.block){for(J=f.childNodes,z=0,D=J.length;D>z;z++)p=J[z],h.push(p);j=[i]}}for(K=j||f.attributes,A=0,E=K.length;E>A;A++)i=K[A],b.test(i.name)&&(v=i.name.replace(b,""),d("Binding",f,v,i.value))}for(L=function(){var a,b,c,d;for(c=f.childNodes,d=[],b=0,a=c.length;a>b;b++)p=c[b],d.push(p);return d}(),M=[],G=0,F=L.length;F>G;G++)m=L[G],M.push(g(m));return M}},k=this.els,i=0,j=k.length;j>i;i++)f=k[i],g(f)},d.prototype.select=function(a){var b,c,d,e,f;for(e=this.bindings,f=[],c=0,d=e.length;d>c;c++)b=e[c],a(b)&&f.push(b);return f},d.prototype.bind=function(){var a,b,c,d,e;for(d=this.bindings,e=[],b=0,c=d.length;c>b;b++)a=d[b],e.push(a.bind());return e},d.prototype.unbind=function(){var a,b,c,d,e;for(d=this.bindings,e=[],b=0,c=d.length;c>b;b++)a=d[b],e.push(a.unbind());return e},d.prototype.sync=function(){var a,b,c,d,e;for(d=this.bindings,e=[],b=0,c=d.length;c>b;b++)a=d[b],e.push(a.sync());return e},d.prototype.publish=function(){var a,b,c,d,e;for(d=this.select(function(a){return a.binder.publishes}),e=[],b=0,c=d.length;c>b;b++)a=d[b],e.push(a.publish());return e},d.prototype.update=function(a){var b,c,d,e,f,g,h;null==a&&(a={});for(c in a)d=a[c],this.models[c]=d;for(g=this.bindings,h=[],e=0,f=g.length;f>e;e++)b=g[e],h.push(b.update(a));return h},d}(),a.Binding=function(){function c(a,c,d,e,f){this.view=a,this.el=c,this.type=d,this.keypath=e,this.options=null!=f?f:{},this.update=b(this.update,this),this.unbind=b(this.unbind,this),this.bind=b(this.bind,this),this.publish=b(this.publish,this),this.sync=b(this.sync,this),this.set=b(this.set,this),this.eventHandler=b(this.eventHandler,this),this.formattedValue=b(this.formattedValue,this),this.setObserver=b(this.setObserver,this),this.setBinder=b(this.setBinder,this),this.formatters=this.options.formatters||[],this.dependencies=[],this.setBinder(),this.setObserver()}return c.prototype.setBinder=function(){var a,b,c,d;if(!(this.binder=this.view.binders[this.type])){d=this.view.binders;for(a in d)c=d[a],"*"!==a&&-1!==a.indexOf("*")&&(b=new RegExp("^"+a.replace("*",".+")+"$"),b.test(this.type)&&(this.binder=c,this.args=new RegExp("^"+a.replace("*","(.+)")+"$").exec(this.type),this.args.shift()))}return this.binder||(this.binder=this.view.binders["*"]),this.binder instanceof Function?this.binder={routine:this.binder}:void 0},c.prototype.setObserver=function(){var b=this;return this.observer=new a.KeypathObserver(this.view,this.view.models,this.keypath,function(a){return b.key&&b.unbind(!0),b.model=a.target,b.key&&b.bind(!0),b.sync()}),this.key=this.observer.key,this.model=this.observer.target},c.prototype.formattedValue=function(a){var b,c,e,f,g,h;for(h=this.formatters,f=0,g=h.length;g>f;f++)c=h[f],b=c.split(/\s+/),e=b.shift(),c=this.view.formatters[e],(null!=c?c.read:void 0)instanceof Function?a=c.read.apply(c,[a].concat(d.call(b))):c instanceof Function&&(a=c.apply(null,[a].concat(d.call(b))));return a},c.prototype.eventHandler=function(a){var b,c;return c=(b=this).view.config.handler,function(d){return c.call(a,this,d,b)}},c.prototype.set=function(a){var b;return a=a instanceof Function&&!this.binder["function"]?this.formattedValue(a.call(this.model)):this.formattedValue(a),null!=(b=this.binder.routine)?b.call(this,this.el,a):void 0},c.prototype.sync=function(){return this.set(this.key?this.view.adapters[this.key["interface"]].read(this.model,this.key.path):this.model)},c.prototype.publish=function(){var b,c,e,f,g,h,i,j,k;for(f=a.Util.getInputValue(this.el),i=this.formatters.slice(0).reverse(),g=0,h=i.length;h>g;g++)c=i[g],b=c.split(/\s+/),e=b.shift(),(null!=(j=this.view.formatters[e])?j.publish:void 0)&&(f=(k=this.view.formatters[e]).publish.apply(k,[f].concat(d.call(b))));return this.view.adapters[this.key["interface"]].publish(this.model,this.key.path,f)},c.prototype.bind=function(b){var c,d,e,f,g,h,i,j,k,l=this;if(null==b&&(b=!1),b||null!=(h=this.binder.bind)&&h.call(this,this.el),this.key&&this.view.adapters[this.key["interface"]].subscribe(this.model,this.key.path,this.sync),(b?void 0:this.view.config.preloadData)&&this.sync(),null!=(i=this.options.dependencies)?i.length:void 0){for(j=this.options.dependencies,k=[],f=0,g=j.length;g>f;f++)c=j[f],e=new a.KeypathObserver(this.view,this.model,c,function(a,b){var c;return c=a.key,l.view.adapters[c["interface"]].unsubscribe(b,c.path,l.sync),l.view.adapters[c["interface"]].subscribe(a.target,c.path,l.sync),l.sync()}),d=e.key,this.view.adapters[d["interface"]].subscribe(e.target,d.path,this.sync),k.push(this.dependencies.push(e));return k}},c.prototype.unbind=function(a){var b,c,d,e,f,g;if(null==a&&(a=!1),a||(null!=(f=this.binder.unbind)&&f.call(this,this.el),this.observer.unobserve()),this.key&&this.view.adapters[this.key["interface"]].unsubscribe(this.model,this.key.path,this.sync),this.dependencies.length){for(g=this.dependencies,d=0,e=g.length;e>d;d++)c=g[d],b=c.key,this.view.adapters[b["interface"]].unsubscribe(c.target,b.path,this.sync);return this.dependencies=[]}},c.prototype.update=function(a){var b;return null==a&&(a={}),null!=(b=this.binder.update)?b.call(this,a):void 0},c}(),a.ComponentBinding=function(d){function e(d,e,f){var g,h,i,j,k;for(this.view=d,this.el=e,this.type=f,this.unbind=b(this.unbind,this),this.bind=b(this.bind,this),this.update=b(this.update,this),this.locals=b(this.locals,this),this.component=a.components[this.type],this.attributes={},this.inflections={},j=this.el.attributes||[],h=0,i=j.length;i>h;h++)g=j[h],k=g.name,c.call(this.component.attributes,k)>=0?this.attributes[g.name]=g.value:this.inflections[g.name]=g.value}return f(e,d),e.prototype.sync=function(){},e.prototype.locals=function(a){var b,c,d,e,f,g,h,i,j;null==a&&(a=this.view.models),f={},i=this.inflections;for(c in i)for(b=i[c],j=b.split("."),g=0,h=j.length;h>g;g++)e=j[g],f[c]=(f[c]||a)[e];for(c in a)d=a[c],null==f[c]&&(f[c]=d);return f},e.prototype.update=function(a){var b;return null!=(b=this.componentView)?b.update(this.locals(a)):void 0},e.prototype.bind=function(){var b,c;return null!=this.componentView?null!=(c=this.componentView)?c.bind():void 0:(b=this.component.build.call(this.attributes),(this.componentView=new a.View(b,this.locals(),this.view.options)).bind(),this.el.parentNode.replaceChild(b,this.el))},e.prototype.unbind=function(){var a;return null!=(a=this.componentView)?a.unbind():void 0},e}(a.Binding),a.TextBinding=function(a){function c(a,c,d,e,f){this.view=a,this.el=c,this.type=d,this.keypath=e,this.options=null!=f?f:{},this.sync=b(this.sync,this),this.formatters=this.options.formatters||[],this.dependencies=[],this.setObserver()}return f(c,a),c.prototype.binder={routine:function(a,b){return a.data=null!=b?b:""}},c.prototype.sync=function(){return c.__super__.sync.apply(this,arguments)},c}(a.Binding),a.KeypathParser=function(){function a(){}return a.parse=function(a,b,d){var e,f,g,h,i;for(g=[],f={"interface":d,path:""},h=0,i=a.length;i>h;h++)e=a[h],c.call(b,e)>=0?(g.push(f),f={"interface":e,path:""}):f.path+=e;return g.push(f),g},a}(),a.TextTemplateParser=function(){function a(){}return a.types={text:0,binding:1},a.parse=function(a,b){var c,d,e,f,g,h,i;for(h=[],f=a.length,c=0,d=0;f>d;){if(c=a.indexOf(b[0],d),0>c){h.push({type:this.types.text,value:a.slice(d)});break}if(c>0&&c>d&&h.push({type:this.types.text,value:a.slice(d,c)}),d=c+b[0].length,c=a.indexOf(b[1],d),0>c){g=a.slice(d-b[1].length),e=h[h.length-1],(null!=e?e.type:void 0)===this.types.text?e.value+=g:h.push({type:this.types.text,value:g});break}i=a.slice(d,c).trim(),h.push({type:this.types.binding,value:i}),d=c+b[1].length}return h},a}(),a.KeypathObserver=function(){function d(a,c,d,e){this.view=a,this.model=c,this.keypath=d,this.callback=e,this.unobserve=b(this.unobserve,this),this.realize=b(this.realize,this),this.update=b(this.update,this),this.parse=b(this.parse,this),this.parse(),this.objectPath=[],this.target=this.realize()}return d.prototype.parse=function(){var b,d,e,f,g,h;return b=function(){var a,b;a=this.view.adapters,b=[];for(d in a)g=a[d],b.push(d);return b}.call(this),h=this.keypath[0],c.call(b,h)>=0?(f=this.keypath[0],e=this.keypath.substr(1)):(f=this.view.config.rootInterface,e=this.keypath),this.tokens=a.KeypathParser.parse(e,b,f),this.key=this.tokens.pop()},d.prototype.update=function(){var a,b;return(a=this.realize())!==this.target?(b=this.target,this.target=a,this.callback(this,b)):void 0},d.prototype.realize=function(){var a,b,c,d,e,f,g;for(a=this.model,g=this.tokens,b=e=0,f=g.length;f>e;b=++e)d=g[b],null!=this.objectPath[b]?a!==(c=this.objectPath[b])&&(this.view.adapters[d["interface"]].unsubscribe(c,d.path,this.update),this.view.adapters[d["interface"]].subscribe(a,d.path,this.update),this.objectPath[b]=a):(this.view.adapters[d["interface"]].subscribe(a,d.path,this.update),this.objectPath[b]=a),a=this.view.adapters[d["interface"]].read(a,d.path);return a},d.prototype.unobserve=function(){var a,b,c,d,e,f,g;for(f=this.tokens,g=[],a=d=0,e=f.length;e>d;a=++d)c=f[a],(b=this.objectPath[a])?g.push(this.view.adapters[c["interface"]].unsubscribe(b,c.path,this.update)):g.push(void 0);return g},d}(),a.binders.text=function(a,b){return null!=a.textContent?a.textContent=null!=b?b:"":a.innerText=null!=b?b:""},a.binders.html=function(a,b){return a.innerHTML=null!=b?b:""},a.binders.show=function(a,b){return a.style.display=b?"":"none"},a.binders.hide=function(a,b){return a.style.display=b?"none":""},a.binders.enabled=function(a,b){return a.disabled=!b},a.binders.disabled=function(a,b){return a.disabled=!!b},a.binders.checked={publishes:!0,bind:function(b){return a.Util.bindEvent(b,"change",this.publish)},unbind:function(b){return a.Util.unbindEvent(b,"change",this.publish)},routine:function(a,b){var c;return a.checked="radio"===a.type?(null!=(c=a.value)?c.toString():void 0)===(null!=b?b.toString():void 0):!!b}},a.binders.unchecked={publishes:!0,bind:function(b){return a.Util.bindEvent(b,"change",this.publish)},unbind:function(b){return a.Util.unbindEvent(b,"change",this.publish)},routine:function(a,b){var c;return a.checked="radio"===a.type?(null!=(c=a.value)?c.toString():void 0)!==(null!=b?b.toString():void 0):!b}},a.binders.value={publishes:!0,bind:function(b){return a.Util.bindEvent(b,"change",this.publish)},unbind:function(b){return a.Util.unbindEvent(b,"change",this.publish)},routine:function(a,b){var d,e,f,g,h,i,j;if(null!=window.jQuery){if(a=jQuery(a),(null!=b?b.toString():void 0)!==(null!=(g=a.val())?g.toString():void 0))return a.val(null!=b?b:"")}else if("select-multiple"===a.type){if(null!=b){for(j=[],e=0,f=a.length;f>e;e++)d=a[e],j.push(d.selected=(h=d.value,c.call(b,h)>=0));return j}}else if((null!=b?b.toString():void 0)!==(null!=(i=a.value)?i.toString():void 0))return a.value=null!=b?b:""}},a.binders["if"]={block:!0,bind:function(a){var b,c;return null==this.marker?(b=[this.view.config.prefix,this.type].join("-").replace("--","-"),c=a.getAttribute(b),this.marker=document.createComment(" rivets: "+this.type+" "+c+" "),a.removeAttribute(b),a.parentNode.insertBefore(this.marker,a),a.parentNode.removeChild(a)):void 0},unbind:function(){var a;return null!=(a=this.nested)?a.unbind():void 0},routine:function(b,c){var d,e,f,g,h;if(!!c==(null==this.nested)){if(c){f={},h=this.view.models;for(d in h)e=h[d],f[d]=e;return g={binders:this.view.options.binders,formatters:this.view.options.formatters,adapters:this.view.options.adapters,config:this.view.options.config},(this.nested=new a.View(b,f,g)).bind(),this.marker.parentNode.insertBefore(b,this.marker.nextSibling)}return b.parentNode.removeChild(b),this.nested.unbind(),delete this.nested}},update:function(a){var b;return null!=(b=this.nested)?b.update(a):void 0}},a.binders.unless={block:!0,bind:function(b){return a.binders["if"].bind.call(this,b)},unbind:function(){return a.binders["if"].unbind.call(this)},routine:function(b,c){return a.binders["if"].routine.call(this,b,!c)},update:function(b){return a.binders["if"].update.call(this,b)}},a.binders["on-*"]={"function":!0,unbind:function(b){return this.handler?a.Util.unbindEvent(b,this.args[0],this.handler):void 0},routine:function(b,c){return this.handler&&a.Util.unbindEvent(b,this.args[0],this.handler),a.Util.bindEvent(b,this.args[0],this.handler=this.eventHandler(c))}},a.binders["each-*"]={block:!0,bind:function(a){var b;return null==this.marker?(b=[this.view.config.prefix,this.type].join("-").replace("--","-"),this.marker=document.createComment(" rivets: "+this.type+" "),this.iterated=[],a.removeAttribute(b),a.parentNode.insertBefore(this.marker,a),a.parentNode.removeChild(a)):void 0},unbind:function(){var a,b,c,d,e;if(null!=this.iterated){for(d=this.iterated,e=[],b=0,c=d.length;c>b;b++)a=d[b],e.push(a.unbind());return e}},routine:function(b,c){var d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A;if(k=this.args[0],c=c||[],this.iterated.length>c.length)for(w=Array(this.iterated.length-c.length),q=0,t=w.length;t>q;q++)f=w[q],p=this.iterated.pop(),p.unbind(),this.marker.parentNode.removeChild(p.els[0]);for(g=r=0,u=c.length;u>r;g=++r)if(j=c[g],e={},e[k]=j,null==this.iterated[g]){x=this.view.models;for(i in x)j=x[i],null==e[i]&&(e[i]=j);m=this.iterated.length?this.iterated[this.iterated.length-1].els[0]:this.marker,l={binders:this.view.options.binders,formatters:this.view.options.formatters,adapters:this.view.options.adapters,config:{}},y=this.view.options.config;for(h in y)o=y[h],l.config[h]=o;l.config.preloadData=!0,n=b.cloneNode(!0),p=new a.View(n,e,l),p.bind(),this.iterated.push(p),this.marker.parentNode.insertBefore(n,m.nextSibling)}else this.iterated[g].models[k]!==j&&this.iterated[g].update(e);if("OPTION"===b.nodeName){for(z=this.view.bindings,A=[],s=0,v=z.length;v>s;s++)d=z[s],d.el===this.marker.parentNode&&"value"===d.type?A.push(d.sync()):A.push(void 0);return A}},update:function(a){var b,c,d,e,f,g,h,i;b={};for(c in a)d=a[c],c!==this.args[0]&&(b[c]=d);for(h=this.iterated,i=[],f=0,g=h.length;g>f;f++)e=h[f],i.push(e.update(b));return i}},a.binders["class-*"]=function(a,b){var c;return c=" "+a.className+" ",!b==(-1!==c.indexOf(" "+this.args[0]+" "))?a.className=b?""+a.className+" "+this.args[0]:c.replace(" "+this.args[0]+" "," ").trim():void 0},a.binders["*"]=function(a,b){return b?a.setAttribute(this.type,b):a.removeAttribute(this.type)},a.adapters["."]={id:"_rv",counter:0,weakmap:{},weakReference:function(a){var b;return null==a[this.id]&&(b=this.counter++,this.weakmap[b]={callbacks:{}},Object.defineProperty(a,this.id,{value:b})),this.weakmap[a[this.id]]},stubFunction:function(a,b){var c,d,e;return d=a[b],c=this.weakReference(a),e=this.weakmap,a[b]=function(){var b,f,g,h,i,j,k,l,m,n;h=d.apply(a,arguments),k=c.pointers;for(g in k)for(f=k[g],n=null!=(l=null!=(m=e[g])?m.callbacks[f]:void 0)?l:[],i=0,j=n.length;j>i;i++)b=n[i],b();return h}},observeMutations:function(a,b,d){var e,f,g,h,i,j;if(Array.isArray(a)){if(g=this.weakReference(a),null==g.pointers)for(g.pointers={},f=["push","pop","shift","unshift","sort","reverse","splice"],i=0,j=f.length;j>i;i++)e=f[i],this.stubFunction(a,e);if(null==(h=g.pointers)[b]&&(h[b]=[]),c.call(g.pointers[b],d)<0)return g.pointers[b].push(d)}},unobserveMutations:function(a,b,c){var d,e;return Array.isArray(a&&null!=a[this.id])&&(d=null!=(e=this.weakReference(a).pointers)?e[b]:void 0)?d.splice(d.indexOf(c),1):void 0},subscribe:function(a,b,d){var e,f,g=this;return e=this.weakReference(a).callbacks,null==e[b]&&(e[b]=[],f=a[b],Object.defineProperty(a,b,{get:function(){return f},set:function(c){var h,i,j;if(c!==f){for(f=c,j=e[b],h=0,i=j.length;i>h;h++)d=j[h],d();return g.observeMutations(c,a[g.id],b)}}})),c.call(e[b],d)<0&&e[b].push(d),this.observeMutations(a[b],a[this.id],b)},unsubscribe:function(a,b,c){var d;return d=this.weakmap[a[this.id]].callbacks[b],d.splice(d.indexOf(c),1),this.unobserveMutations(a[b],a[this.id],b)},read:function(a,b){return a[b]},publish:function(a,b,c){return a[b]=c}},a.factory=function(b){return b._=a,b.binders=a.binders,b.components=a.components,b.formatters=a.formatters,b.adapters=a.adapters,b.config=a.config,b.configure=function(b){var c,d;null==b&&(b={});for(c in b)d=b[c],a.config[c]=d},b.bind=function(b,c,d){var e;return null==c&&(c={}),null==d&&(d={}),e=new a.View(b,c,d),e.bind(),e}},"object"==typeof exports?a.factory(exports):"function"==typeof define&&define.amd?define(["exports"],function(b){return a.factory(this.rivets=b),b}):a.factory(this.rivets={})}).call(this);
+(function() {
+  var Rivets, bindMethod, unbindMethod, _ref,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
+    __slice = [].slice,
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  Rivets = {
+    binders: {},
+    components: {},
+    formatters: {},
+    adapters: {},
+    config: {
+      prefix: 'rv',
+      templateDelimiters: ['{', '}'],
+      rootInterface: '.',
+      preloadData: true,
+      handler: function(context, ev, binding) {
+        return this.call(context, ev, binding.view.models);
+      }
+    }
+  };
+
+  if ('jQuery' in window) {
+    _ref = 'on' in jQuery ? ['on', 'off'] : ['bind', 'unbind'], bindMethod = _ref[0], unbindMethod = _ref[1];
+    Rivets.Util = {
+      bindEvent: function(el, event, handler) {
+        return jQuery(el)[bindMethod](event, handler);
+      },
+      unbindEvent: function(el, event, handler) {
+        return jQuery(el)[unbindMethod](event, handler);
+      },
+      getInputValue: function(el) {
+        var $el;
+        $el = jQuery(el);
+        if ($el.attr('type') === 'checkbox') {
+          return $el.is(':checked');
+        } else {
+          return $el.val();
+        }
+      }
+    };
+  } else {
+    Rivets.Util = {
+      bindEvent: (function() {
+        if ('addEventListener' in window) {
+          return function(el, event, handler) {
+            return el.addEventListener(event, handler, false);
+          };
+        }
+        return function(el, event, handler) {
+          return el.attachEvent('on' + event, handler);
+        };
+      })(),
+      unbindEvent: (function() {
+        if ('removeEventListener' in window) {
+          return function(el, event, handler) {
+            return el.removeEventListener(event, handler, false);
+          };
+        }
+        return function(el, event, handler) {
+          return el.detachEvent('on' + event, handler);
+        };
+      })(),
+      getInputValue: function(el) {
+        var o, _i, _len, _results;
+        if (el.type === 'checkbox') {
+          return el.checked;
+        } else if (el.type === 'select-multiple') {
+          _results = [];
+          for (_i = 0, _len = el.length; _i < _len; _i++) {
+            o = el[_i];
+            if (o.selected) {
+              _results.push(o.value);
+            }
+          }
+          return _results;
+        } else {
+          return el.value;
+        }
+      }
+    };
+  }
+
+  Rivets.View = (function() {
+    function View(els, models, options) {
+      var k, option, v, _base, _i, _len, _ref1, _ref2, _ref3;
+      this.els = els;
+      this.models = models;
+      this.options = options != null ? options : {};
+      this.update = __bind(this.update, this);
+      this.publish = __bind(this.publish, this);
+      this.sync = __bind(this.sync, this);
+      this.unbind = __bind(this.unbind, this);
+      this.bind = __bind(this.bind, this);
+      this.select = __bind(this.select, this);
+      this.build = __bind(this.build, this);
+      this.componentRegExp = __bind(this.componentRegExp, this);
+      this.bindingRegExp = __bind(this.bindingRegExp, this);
+      if (!(this.els.jquery || this.els instanceof Array)) {
+        this.els = [this.els];
+      }
+      _ref1 = ['config', 'binders', 'formatters', 'adapters'];
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        option = _ref1[_i];
+        this[option] = {};
+        if (this.options[option]) {
+          _ref2 = this.options[option];
+          for (k in _ref2) {
+            v = _ref2[k];
+            this[option][k] = v;
+          }
+        }
+        _ref3 = Rivets[option];
+        for (k in _ref3) {
+          v = _ref3[k];
+          if ((_base = this[option])[k] == null) {
+            _base[k] = v;
+          }
+        }
+      }
+      this.build();
+    }
+
+    View.prototype.bindingRegExp = function() {
+      return new RegExp("^" + this.config.prefix + "-");
+    };
+
+    View.prototype.componentRegExp = function() {
+      return new RegExp("^" + (this.config.prefix.toUpperCase()) + "-");
+    };
+
+    View.prototype.build = function() {
+      var bindingRegExp, buildBinding, componentRegExp, el, parse, skipNodes, _i, _len, _ref1,
+        _this = this;
+      this.bindings = [];
+      skipNodes = [];
+      bindingRegExp = this.bindingRegExp();
+      componentRegExp = this.componentRegExp();
+      buildBinding = function(binding, node, type, declaration) {
+        var context, ctx, dependencies, keypath, options, pipe, pipes;
+        options = {};
+        pipes = (function() {
+          var _i, _len, _ref1, _results;
+          _ref1 = declaration.split('|');
+          _results = [];
+          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+            pipe = _ref1[_i];
+            _results.push(pipe.trim());
+          }
+          return _results;
+        })();
+        context = (function() {
+          var _i, _len, _ref1, _results;
+          _ref1 = pipes.shift().split('<');
+          _results = [];
+          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+            ctx = _ref1[_i];
+            _results.push(ctx.trim());
+          }
+          return _results;
+        })();
+        keypath = context.shift();
+        options.formatters = pipes;
+        if (dependencies = context.shift()) {
+          options.dependencies = dependencies.split(/\s+/);
+        }
+        return _this.bindings.push(new Rivets[binding](_this, node, type, keypath, options));
+      };
+      parse = function(node) {
+        var attribute, attributes, binder, childNode, delimiters, identifier, n, parser, regexp, text, token, tokens, type, value, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref1, _ref2, _ref3, _ref4, _ref5, _results;
+        if (__indexOf.call(skipNodes, node) < 0) {
+          if (node.nodeType === 3) {
+            parser = Rivets.TextTemplateParser;
+            if (delimiters = _this.config.templateDelimiters) {
+              if ((tokens = parser.parse(node.data, delimiters)).length) {
+                if (!(tokens.length === 1 && tokens[0].type === parser.types.text)) {
+                  for (_i = 0, _len = tokens.length; _i < _len; _i++) {
+                    token = tokens[_i];
+                    text = document.createTextNode(token.value);
+                    node.parentNode.insertBefore(text, node);
+                    if (token.type === 1) {
+                      buildBinding('TextBinding', text, null, token.value);
+                    }
+                  }
+                  node.parentNode.removeChild(node);
+                }
+              }
+            }
+          } else if (componentRegExp.test(node.tagName)) {
+            type = node.tagName.replace(componentRegExp, '').toLowerCase();
+            _this.bindings.push(new Rivets.ComponentBinding(_this, node, type));
+          } else if (node.attributes != null) {
+            _ref1 = node.attributes;
+            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+              attribute = _ref1[_j];
+              if (bindingRegExp.test(attribute.name)) {
+                type = attribute.name.replace(bindingRegExp, '');
+                if (!(binder = _this.binders[type])) {
+                  _ref2 = _this.binders;
+                  for (identifier in _ref2) {
+                    value = _ref2[identifier];
+                    if (identifier !== '*' && identifier.indexOf('*') !== -1) {
+                      regexp = new RegExp("^" + (identifier.replace('*', '.+')) + "$");
+                      if (regexp.test(type)) {
+                        binder = value;
+                      }
+                    }
+                  }
+                }
+                binder || (binder = _this.binders['*']);
+                if (binder.block) {
+                  _ref3 = node.childNodes;
+                  for (_k = 0, _len2 = _ref3.length; _k < _len2; _k++) {
+                    n = _ref3[_k];
+                    skipNodes.push(n);
+                  }
+                  attributes = [attribute];
+                }
+              }
+            }
+            _ref4 = attributes || node.attributes;
+            for (_l = 0, _len3 = _ref4.length; _l < _len3; _l++) {
+              attribute = _ref4[_l];
+              if (bindingRegExp.test(attribute.name)) {
+                type = attribute.name.replace(bindingRegExp, '');
+                buildBinding('Binding', node, type, attribute.value);
+              }
+            }
+          }
+          _ref5 = (function() {
+            var _len4, _n, _ref5, _results1;
+            _ref5 = node.childNodes;
+            _results1 = [];
+            for (_n = 0, _len4 = _ref5.length; _n < _len4; _n++) {
+              n = _ref5[_n];
+              _results1.push(n);
+            }
+            return _results1;
+          })();
+          _results = [];
+          for (_m = 0, _len4 = _ref5.length; _m < _len4; _m++) {
+            childNode = _ref5[_m];
+            _results.push(parse(childNode));
+          }
+          return _results;
+        }
+      };
+      _ref1 = this.els;
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        el = _ref1[_i];
+        parse(el);
+      }
+    };
+
+    View.prototype.select = function(fn) {
+      var binding, _i, _len, _ref1, _results;
+      _ref1 = this.bindings;
+      _results = [];
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        binding = _ref1[_i];
+        if (fn(binding)) {
+          _results.push(binding);
+        }
+      }
+      return _results;
+    };
+
+    View.prototype.bind = function() {
+      var binding, _i, _len, _ref1, _results;
+      _ref1 = this.bindings;
+      _results = [];
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        binding = _ref1[_i];
+        _results.push(binding.bind());
+      }
+      return _results;
+    };
+
+    View.prototype.unbind = function() {
+      var binding, _i, _len, _ref1, _results;
+      _ref1 = this.bindings;
+      _results = [];
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        binding = _ref1[_i];
+        _results.push(binding.unbind());
+      }
+      return _results;
+    };
+
+    View.prototype.sync = function() {
+      var binding, _i, _len, _ref1, _results;
+      _ref1 = this.bindings;
+      _results = [];
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        binding = _ref1[_i];
+        _results.push(binding.sync());
+      }
+      return _results;
+    };
+
+    View.prototype.publish = function() {
+      var binding, _i, _len, _ref1, _results;
+      _ref1 = this.select(function(b) {
+        return b.binder.publishes;
+      });
+      _results = [];
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        binding = _ref1[_i];
+        _results.push(binding.publish());
+      }
+      return _results;
+    };
+
+    View.prototype.update = function(models) {
+      var binding, key, model, _i, _len, _ref1, _results;
+      if (models == null) {
+        models = {};
+      }
+      for (key in models) {
+        model = models[key];
+        this.models[key] = model;
+      }
+      _ref1 = this.bindings;
+      _results = [];
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        binding = _ref1[_i];
+        _results.push(binding.update(models));
+      }
+      return _results;
+    };
+
+    return View;
+
+  })();
+
+  Rivets.Binding = (function() {
+    function Binding(view, el, type, keypath, options) {
+      this.view = view;
+      this.el = el;
+      this.type = type;
+      this.keypath = keypath;
+      this.options = options != null ? options : {};
+      this.update = __bind(this.update, this);
+      this.unbind = __bind(this.unbind, this);
+      this.bind = __bind(this.bind, this);
+      this.publish = __bind(this.publish, this);
+      this.sync = __bind(this.sync, this);
+      this.set = __bind(this.set, this);
+      this.eventHandler = __bind(this.eventHandler, this);
+      this.formattedValue = __bind(this.formattedValue, this);
+      this.setBinder = __bind(this.setBinder, this);
+      this.formatters = this.options.formatters || [];
+      this.dependencies = [];
+      this.model = void 0;
+      this.setBinder();
+    }
+
+    Binding.prototype.setBinder = function() {
+      var identifier, regexp, value, _ref1;
+      if (!(this.binder = this.view.binders[this.type])) {
+        _ref1 = this.view.binders;
+        for (identifier in _ref1) {
+          value = _ref1[identifier];
+          if (identifier !== '*' && identifier.indexOf('*') !== -1) {
+            regexp = new RegExp("^" + (identifier.replace('*', '.+')) + "$");
+            if (regexp.test(this.type)) {
+              this.binder = value;
+              this.args = new RegExp("^" + (identifier.replace('*', '(.+)')) + "$").exec(this.type);
+              this.args.shift();
+            }
+          }
+        }
+      }
+      this.binder || (this.binder = this.view.binders['*']);
+      if (this.binder instanceof Function) {
+        return this.binder = {
+          routine: this.binder
+        };
+      }
+    };
+
+    Binding.prototype.formattedValue = function(value) {
+      var args, formatter, id, _i, _len, _ref1;
+      _ref1 = this.formatters;
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        formatter = _ref1[_i];
+        args = formatter.split(/\s+/);
+        id = args.shift();
+        formatter = this.view.formatters[id];
+        if ((formatter != null ? formatter.read : void 0) instanceof Function) {
+          value = formatter.read.apply(formatter, [value].concat(__slice.call(args)));
+        } else if (formatter instanceof Function) {
+          value = formatter.apply(null, [value].concat(__slice.call(args)));
+        }
+      }
+      return value;
+    };
+
+    Binding.prototype.eventHandler = function(fn) {
+      var binding, handler;
+      handler = (binding = this).view.config.handler;
+      return function(ev) {
+        return handler.call(fn, this, ev, binding);
+      };
+    };
+
+    Binding.prototype.set = function(value) {
+      var _ref1;
+      value = value instanceof Function && !this.binder["function"] ? this.formattedValue(value.call(this.model)) : this.formattedValue(value);
+      return (_ref1 = this.binder.routine) != null ? _ref1.call(this, this.el, value) : void 0;
+    };
+
+    Binding.prototype.sync = function() {
+      var dependency, observer, _i, _j, _len, _len1, _ref1, _ref2, _ref3;
+      if (this.model !== this.observer.target) {
+        _ref1 = this.dependencies;
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          observer = _ref1[_i];
+          observer.unobserve();
+        }
+        this.dependencies = [];
+        if (((this.model = this.observer.target) != null) && ((_ref2 = this.options.dependencies) != null ? _ref2.length : void 0)) {
+          _ref3 = this.options.dependencies;
+          for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
+            dependency = _ref3[_j];
+            observer = new Rivets.Observer(this.view, this.model, dependency, this.sync);
+            this.dependencies.push(observer);
+          }
+        }
+      }
+      return this.set(this.observer.value());
+    };
+
+    Binding.prototype.publish = function() {
+      var args, formatter, id, value, _i, _len, _ref1, _ref2, _ref3;
+      value = Rivets.Util.getInputValue(this.el);
+      _ref1 = this.formatters.slice(0).reverse();
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        formatter = _ref1[_i];
+        args = formatter.split(/\s+/);
+        id = args.shift();
+        if ((_ref2 = this.view.formatters[id]) != null ? _ref2.publish : void 0) {
+          value = (_ref3 = this.view.formatters[id]).publish.apply(_ref3, [value].concat(__slice.call(args)));
+        }
+      }
+      return this.observer.publish(value);
+    };
+
+    Binding.prototype.bind = function() {
+      var dependency, observer, _i, _len, _ref1, _ref2, _ref3;
+      if ((_ref1 = this.binder.bind) != null) {
+        _ref1.call(this, this.el);
+      }
+      this.observer = new Rivets.Observer(this.view, this.view.models, this.keypath, this.sync);
+      this.model = this.observer.target;
+      if ((this.model != null) && ((_ref2 = this.options.dependencies) != null ? _ref2.length : void 0)) {
+        _ref3 = this.options.dependencies;
+        for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
+          dependency = _ref3[_i];
+          observer = new Rivets.Observer(this.view, this.model, dependency, this.sync);
+          this.dependencies.push(observer);
+        }
+      }
+      if (this.view.config.preloadData) {
+        return this.sync();
+      }
+    };
+
+    Binding.prototype.unbind = function() {
+      var observer, _i, _len, _ref1, _ref2;
+      if ((_ref1 = this.binder.unbind) != null) {
+        _ref1.call(this, this.el);
+      }
+      this.observer.unobserve();
+      _ref2 = this.dependencies;
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        observer = _ref2[_i];
+        observer.unobserve();
+      }
+      return this.dependencies = [];
+    };
+
+    Binding.prototype.update = function(models) {
+      var _ref1;
+      if (models == null) {
+        models = {};
+      }
+      this.model = this.observer.target;
+      return (_ref1 = this.binder.update) != null ? _ref1.call(this, models) : void 0;
+    };
+
+    return Binding;
+
+  })();
+
+  Rivets.ComponentBinding = (function(_super) {
+    __extends(ComponentBinding, _super);
+
+    function ComponentBinding(view, el, type) {
+      var attribute, _i, _len, _ref1, _ref2;
+      this.view = view;
+      this.el = el;
+      this.type = type;
+      this.unbind = __bind(this.unbind, this);
+      this.bind = __bind(this.bind, this);
+      this.update = __bind(this.update, this);
+      this.locals = __bind(this.locals, this);
+      this.component = Rivets.components[this.type];
+      this.attributes = {};
+      this.inflections = {};
+      _ref1 = this.el.attributes || [];
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        attribute = _ref1[_i];
+        if (_ref2 = attribute.name, __indexOf.call(this.component.attributes, _ref2) >= 0) {
+          this.attributes[attribute.name] = attribute.value;
+        } else {
+          this.inflections[attribute.name] = attribute.value;
+        }
+      }
+    }
+
+    ComponentBinding.prototype.sync = function() {};
+
+    ComponentBinding.prototype.locals = function(models) {
+      var inverse, key, model, path, result, _i, _len, _ref1, _ref2;
+      if (models == null) {
+        models = this.view.models;
+      }
+      result = {};
+      _ref1 = this.inflections;
+      for (key in _ref1) {
+        inverse = _ref1[key];
+        _ref2 = inverse.split('.');
+        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+          path = _ref2[_i];
+          result[key] = (result[key] || models)[path];
+        }
+      }
+      for (key in models) {
+        model = models[key];
+        if (result[key] == null) {
+          result[key] = model;
+        }
+      }
+      return result;
+    };
+
+    ComponentBinding.prototype.update = function(models) {
+      var _ref1;
+      return (_ref1 = this.componentView) != null ? _ref1.update(this.locals(models)) : void 0;
+    };
+
+    ComponentBinding.prototype.bind = function() {
+      var el, _ref1;
+      if (this.componentView != null) {
+        return (_ref1 = this.componentView) != null ? _ref1.bind() : void 0;
+      } else {
+        el = this.component.build.call(this.attributes);
+        (this.componentView = new Rivets.View(el, this.locals(), this.view.options)).bind();
+        return this.el.parentNode.replaceChild(el, this.el);
+      }
+    };
+
+    ComponentBinding.prototype.unbind = function() {
+      var _ref1;
+      return (_ref1 = this.componentView) != null ? _ref1.unbind() : void 0;
+    };
+
+    return ComponentBinding;
+
+  })(Rivets.Binding);
+
+  Rivets.TextBinding = (function(_super) {
+    __extends(TextBinding, _super);
+
+    function TextBinding(view, el, type, keypath, options) {
+      this.view = view;
+      this.el = el;
+      this.type = type;
+      this.keypath = keypath;
+      this.options = options != null ? options : {};
+      this.sync = __bind(this.sync, this);
+      this.formatters = this.options.formatters || [];
+      this.dependencies = [];
+    }
+
+    TextBinding.prototype.binder = {
+      routine: function(node, value) {
+        return node.data = value != null ? value : '';
+      }
+    };
+
+    TextBinding.prototype.sync = function() {
+      return TextBinding.__super__.sync.apply(this, arguments);
+    };
+
+    return TextBinding;
+
+  })(Rivets.Binding);
+
+  Rivets.KeypathParser = (function() {
+    function KeypathParser() {}
+
+    KeypathParser.parse = function(keypath, interfaces, root) {
+      var char, current, index, tokens, _i, _ref1;
+      tokens = [];
+      current = {
+        "interface": root,
+        path: ''
+      };
+      for (index = _i = 0, _ref1 = keypath.length; _i < _ref1; index = _i += 1) {
+        char = keypath.charAt(index);
+        if (__indexOf.call(interfaces, char) >= 0) {
+          tokens.push(current);
+          current = {
+            "interface": char,
+            path: ''
+          };
+        } else {
+          current.path += char;
+        }
+      }
+      tokens.push(current);
+      return tokens;
+    };
+
+    return KeypathParser;
+
+  })();
+
+  Rivets.TextTemplateParser = (function() {
+    function TextTemplateParser() {}
+
+    TextTemplateParser.types = {
+      text: 0,
+      binding: 1
+    };
+
+    TextTemplateParser.parse = function(template, delimiters) {
+      var index, lastIndex, lastToken, length, substring, tokens, value;
+      tokens = [];
+      length = template.length;
+      index = 0;
+      lastIndex = 0;
+      while (lastIndex < length) {
+        index = template.indexOf(delimiters[0], lastIndex);
+        if (index < 0) {
+          tokens.push({
+            type: this.types.text,
+            value: template.slice(lastIndex)
+          });
+          break;
+        } else {
+          if (index > 0 && lastIndex < index) {
+            tokens.push({
+              type: this.types.text,
+              value: template.slice(lastIndex, index)
+            });
+          }
+          lastIndex = index + delimiters[0].length;
+          index = template.indexOf(delimiters[1], lastIndex);
+          if (index < 0) {
+            substring = template.slice(lastIndex - delimiters[1].length);
+            lastToken = tokens[tokens.length - 1];
+            if ((lastToken != null ? lastToken.type : void 0) === this.types.text) {
+              lastToken.value += substring;
+            } else {
+              tokens.push({
+                type: this.types.text,
+                value: substring
+              });
+            }
+            break;
+          }
+          value = template.slice(lastIndex, index).trim();
+          tokens.push({
+            type: this.types.binding,
+            value: value
+          });
+          lastIndex = index + delimiters[1].length;
+        }
+      }
+      return tokens;
+    };
+
+    return TextTemplateParser;
+
+  })();
+
+  Rivets.Observer = (function() {
+    function Observer(view, model, keypath, callback) {
+      this.view = view;
+      this.model = model;
+      this.keypath = keypath;
+      this.callback = callback;
+      this.unobserve = __bind(this.unobserve, this);
+      this.realize = __bind(this.realize, this);
+      this.value = __bind(this.value, this);
+      this.publish = __bind(this.publish, this);
+      this.read = __bind(this.read, this);
+      this.set = __bind(this.set, this);
+      this.adapter = __bind(this.adapter, this);
+      this.update = __bind(this.update, this);
+      this.initialize = __bind(this.initialize, this);
+      this.parse = __bind(this.parse, this);
+      this.parse();
+      this.initialize();
+    }
+
+    Observer.prototype.parse = function() {
+      var interfaces, k, path, root, v, _ref1;
+      interfaces = (function() {
+        var _ref1, _results;
+        _ref1 = this.view.adapters;
+        _results = [];
+        for (k in _ref1) {
+          v = _ref1[k];
+          _results.push(k);
+        }
+        return _results;
+      }).call(this);
+      if (_ref1 = this.keypath[0], __indexOf.call(interfaces, _ref1) >= 0) {
+        root = this.keypath[0];
+        path = this.keypath.substr(1);
+      } else {
+        root = this.view.config.rootInterface;
+        path = this.keypath;
+      }
+      this.tokens = Rivets.KeypathParser.parse(path, interfaces, root);
+      return this.key = this.tokens.pop();
+    };
+
+    Observer.prototype.initialize = function() {
+      this.objectPath = [];
+      this.target = this.realize();
+      if (this.target != null) {
+        return this.set(true, this.key, this.target, this.callback);
+      }
+    };
+
+    Observer.prototype.update = function() {
+      var next, oldValue;
+      if ((next = this.realize()) !== this.target) {
+        if (this.target != null) {
+          this.set(false, this.key, this.target, this.callback);
+        }
+        if (next != null) {
+          this.set(true, this.key, next, this.callback);
+        }
+        oldValue = this.value();
+        this.target = next;
+        if (this.value() !== oldValue) {
+          return this.callback();
+        }
+      }
+    };
+
+    Observer.prototype.adapter = function(key) {
+      return this.view.adapters[key["interface"]];
+    };
+
+    Observer.prototype.set = function(active, key, obj, callback) {
+      var action;
+      action = active ? 'subscribe' : 'unsubscribe';
+      return this.adapter(key)[action](obj, key.path, callback);
+    };
+
+    Observer.prototype.read = function(key, obj) {
+      return this.adapter(key).read(obj, key.path);
+    };
+
+    Observer.prototype.publish = function(value) {
+      if (this.target != null) {
+        return this.adapter(this.key).publish(this.target, this.key.path, value);
+      }
+    };
+
+    Observer.prototype.value = function() {
+      if (this.target != null) {
+        return this.read(this.key, this.target);
+      }
+    };
+
+    Observer.prototype.realize = function() {
+      var current, index, prev, token, unreached, _i, _len, _ref1;
+      current = this.model;
+      unreached = null;
+      _ref1 = this.tokens;
+      for (index = _i = 0, _len = _ref1.length; _i < _len; index = ++_i) {
+        token = _ref1[index];
+        if (current != null) {
+          if (this.objectPath[index] != null) {
+            if (current !== (prev = this.objectPath[index])) {
+              this.set(false, token, prev, this.update);
+              this.set(true, token, current, this.update);
+              this.objectPath[index] = current;
+            }
+          } else {
+            this.set(true, token, current, this.update);
+            this.objectPath[index] = current;
+          }
+          current = this.read(token, current);
+        } else {
+          if (unreached == null) {
+            unreached = index;
+          }
+          if (prev = this.objectPath[index]) {
+            this.set(false, token, prev, this.update);
+          }
+        }
+      }
+      if (unreached != null) {
+        this.objectPath.splice(unreached);
+      }
+      return current;
+    };
+
+    Observer.prototype.unobserve = function() {
+      var index, obj, token, _i, _len, _ref1, _results;
+      _ref1 = this.tokens;
+      _results = [];
+      for (index = _i = 0, _len = _ref1.length; _i < _len; index = ++_i) {
+        token = _ref1[index];
+        if (obj = this.objectPath[index]) {
+          _results.push(this.set(false, token, obj, this.update));
+        } else {
+          _results.push(void 0);
+        }
+      }
+      return _results;
+    };
+
+    return Observer;
+
+  })();
+
+  Rivets.binders.text = function(el, value) {
+    if (el.textContent != null) {
+      return el.textContent = value != null ? value : '';
+    } else {
+      return el.innerText = value != null ? value : '';
+    }
+  };
+
+  Rivets.binders.html = function(el, value) {
+    return el.innerHTML = value != null ? value : '';
+  };
+
+  Rivets.binders.show = function(el, value) {
+    return el.style.display = value ? '' : 'none';
+  };
+
+  Rivets.binders.hide = function(el, value) {
+    return el.style.display = value ? 'none' : '';
+  };
+
+  Rivets.binders.enabled = function(el, value) {
+    return el.disabled = !value;
+  };
+
+  Rivets.binders.disabled = function(el, value) {
+    return el.disabled = !!value;
+  };
+
+  Rivets.binders.checked = {
+    publishes: true,
+    bind: function(el) {
+      return Rivets.Util.bindEvent(el, 'change', this.publish);
+    },
+    unbind: function(el) {
+      return Rivets.Util.unbindEvent(el, 'change', this.publish);
+    },
+    routine: function(el, value) {
+      var _ref1;
+      if (el.type === 'radio') {
+        return el.checked = ((_ref1 = el.value) != null ? _ref1.toString() : void 0) === (value != null ? value.toString() : void 0);
+      } else {
+        return el.checked = !!value;
+      }
+    }
+  };
+
+  Rivets.binders.unchecked = {
+    publishes: true,
+    bind: function(el) {
+      return Rivets.Util.bindEvent(el, 'change', this.publish);
+    },
+    unbind: function(el) {
+      return Rivets.Util.unbindEvent(el, 'change', this.publish);
+    },
+    routine: function(el, value) {
+      var _ref1;
+      if (el.type === 'radio') {
+        return el.checked = ((_ref1 = el.value) != null ? _ref1.toString() : void 0) !== (value != null ? value.toString() : void 0);
+      } else {
+        return el.checked = !value;
+      }
+    }
+  };
+
+  Rivets.binders.value = {
+    publishes: true,
+    bind: function(el) {
+      return Rivets.Util.bindEvent(el, 'change', this.publish);
+    },
+    unbind: function(el) {
+      return Rivets.Util.unbindEvent(el, 'change', this.publish);
+    },
+    routine: function(el, value) {
+      var o, _i, _len, _ref1, _ref2, _ref3, _results;
+      if (window.jQuery != null) {
+        el = jQuery(el);
+        if ((value != null ? value.toString() : void 0) !== ((_ref1 = el.val()) != null ? _ref1.toString() : void 0)) {
+          return el.val(value != null ? value : '');
+        }
+      } else {
+        if (el.type === 'select-multiple') {
+          if (value != null) {
+            _results = [];
+            for (_i = 0, _len = el.length; _i < _len; _i++) {
+              o = el[_i];
+              _results.push(o.selected = (_ref2 = o.value, __indexOf.call(value, _ref2) >= 0));
+            }
+            return _results;
+          }
+        } else if ((value != null ? value.toString() : void 0) !== ((_ref3 = el.value) != null ? _ref3.toString() : void 0)) {
+          return el.value = value != null ? value : '';
+        }
+      }
+    }
+  };
+
+  Rivets.binders["if"] = {
+    block: true,
+    bind: function(el) {
+      var attr, declaration;
+      if (this.marker == null) {
+        attr = [this.view.config.prefix, this.type].join('-').replace('--', '-');
+        declaration = el.getAttribute(attr);
+        this.marker = document.createComment(" rivets: " + this.type + " " + declaration + " ");
+        el.removeAttribute(attr);
+        el.parentNode.insertBefore(this.marker, el);
+        return el.parentNode.removeChild(el);
+      }
+    },
+    unbind: function() {
+      var _ref1;
+      return (_ref1 = this.nested) != null ? _ref1.unbind() : void 0;
+    },
+    routine: function(el, value) {
+      var key, model, models, options, _ref1;
+      if (!!value === (this.nested == null)) {
+        if (value) {
+          models = {};
+          _ref1 = this.view.models;
+          for (key in _ref1) {
+            model = _ref1[key];
+            models[key] = model;
+          }
+          options = {
+            binders: this.view.options.binders,
+            formatters: this.view.options.formatters,
+            adapters: this.view.options.adapters,
+            config: this.view.options.config
+          };
+          (this.nested = new Rivets.View(el, models, options)).bind();
+          return this.marker.parentNode.insertBefore(el, this.marker.nextSibling);
+        } else {
+          el.parentNode.removeChild(el);
+          this.nested.unbind();
+          return delete this.nested;
+        }
+      }
+    },
+    update: function(models) {
+      var _ref1;
+      return (_ref1 = this.nested) != null ? _ref1.update(models) : void 0;
+    }
+  };
+
+  Rivets.binders.unless = {
+    block: true,
+    bind: function(el) {
+      return Rivets.binders["if"].bind.call(this, el);
+    },
+    unbind: function() {
+      return Rivets.binders["if"].unbind.call(this);
+    },
+    routine: function(el, value) {
+      return Rivets.binders["if"].routine.call(this, el, !value);
+    },
+    update: function(models) {
+      return Rivets.binders["if"].update.call(this, models);
+    }
+  };
+
+  Rivets.binders['on-*'] = {
+    "function": true,
+    unbind: function(el) {
+      if (this.handler) {
+        return Rivets.Util.unbindEvent(el, this.args[0], this.handler);
+      }
+    },
+    routine: function(el, value) {
+      if (this.handler) {
+        Rivets.Util.unbindEvent(el, this.args[0], this.handler);
+      }
+      return Rivets.Util.bindEvent(el, this.args[0], this.handler = this.eventHandler(value));
+    }
+  };
+
+  Rivets.binders['each-*'] = {
+    block: true,
+    bind: function(el) {
+      var attr;
+      if (this.marker == null) {
+        attr = [this.view.config.prefix, this.type].join('-').replace('--', '-');
+        this.marker = document.createComment(" rivets: " + this.type + " ");
+        this.iterated = [];
+        el.removeAttribute(attr);
+        el.parentNode.insertBefore(this.marker, el);
+        return el.parentNode.removeChild(el);
+      }
+    },
+    unbind: function(el) {
+      var view, _i, _len, _ref1, _results;
+      if (this.iterated != null) {
+        _ref1 = this.iterated;
+        _results = [];
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          view = _ref1[_i];
+          _results.push(view.unbind());
+        }
+        return _results;
+      }
+    },
+    routine: function(el, collection) {
+      var binding, data, i, index, k, key, model, modelName, options, previous, template, v, view, _i, _j, _k, _len, _len1, _len2, _ref1, _ref2, _ref3, _ref4, _results;
+      modelName = this.args[0];
+      collection = collection || [];
+      if (this.iterated.length > collection.length) {
+        _ref1 = Array(this.iterated.length - collection.length);
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          i = _ref1[_i];
+          view = this.iterated.pop();
+          view.unbind();
+          this.marker.parentNode.removeChild(view.els[0]);
+        }
+      }
+      for (index = _j = 0, _len1 = collection.length; _j < _len1; index = ++_j) {
+        model = collection[index];
+        data = {
+          index: index
+        };
+        data[modelName] = model;
+        if (this.iterated[index] == null) {
+          _ref2 = this.view.models;
+          for (key in _ref2) {
+            model = _ref2[key];
+            if (data[key] == null) {
+              data[key] = model;
+            }
+          }
+          previous = this.iterated.length ? this.iterated[this.iterated.length - 1].els[0] : this.marker;
+          options = {
+            binders: this.view.options.binders,
+            formatters: this.view.options.formatters,
+            adapters: this.view.options.adapters,
+            config: {}
+          };
+          _ref3 = this.view.options.config;
+          for (k in _ref3) {
+            v = _ref3[k];
+            options.config[k] = v;
+          }
+          options.config.preloadData = true;
+          template = el.cloneNode(true);
+          view = new Rivets.View(template, data, options);
+          view.bind();
+          this.iterated.push(view);
+          this.marker.parentNode.insertBefore(template, previous.nextSibling);
+        } else if (this.iterated[index].models[modelName] !== model) {
+          this.iterated[index].update(data);
+        }
+      }
+      if (el.nodeName === 'OPTION') {
+        _ref4 = this.view.bindings;
+        _results = [];
+        for (_k = 0, _len2 = _ref4.length; _k < _len2; _k++) {
+          binding = _ref4[_k];
+          if (binding.el === this.marker.parentNode && binding.type === 'value') {
+            _results.push(binding.sync());
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
+      }
+    },
+    update: function(models) {
+      var data, key, model, view, _i, _len, _ref1, _results;
+      data = {};
+      for (key in models) {
+        model = models[key];
+        if (key !== this.args[0]) {
+          data[key] = model;
+        }
+      }
+      _ref1 = this.iterated;
+      _results = [];
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        view = _ref1[_i];
+        _results.push(view.update(data));
+      }
+      return _results;
+    }
+  };
+
+  Rivets.binders['class-*'] = function(el, value) {
+    var elClass;
+    elClass = " " + el.className + " ";
+    if (!value === (elClass.indexOf(" " + this.args[0] + " ") !== -1)) {
+      return el.className = value ? "" + el.className + " " + this.args[0] : elClass.replace(" " + this.args[0] + " ", ' ').trim();
+    }
+  };
+
+  Rivets.binders['*'] = function(el, value) {
+    if (value != null) {
+      return el.setAttribute(this.type, value);
+    } else {
+      return el.removeAttribute(this.type);
+    }
+  };
+
+  Rivets.adapters['.'] = {
+    id: '_rv',
+    counter: 0,
+    weakmap: {},
+    weakReference: function(obj) {
+      var id;
+      if (obj[this.id] == null) {
+        id = this.counter++;
+        this.weakmap[id] = {
+          callbacks: {}
+        };
+        Object.defineProperty(obj, this.id, {
+          value: id
+        });
+      }
+      return this.weakmap[obj[this.id]];
+    },
+    stubFunction: function(obj, fn) {
+      var map, original, weakmap;
+      original = obj[fn];
+      map = this.weakReference(obj);
+      weakmap = this.weakmap;
+      return obj[fn] = function() {
+        var callback, k, r, response, _i, _len, _ref1, _ref2, _ref3, _ref4;
+        response = original.apply(obj, arguments);
+        _ref1 = map.pointers;
+        for (r in _ref1) {
+          k = _ref1[r];
+          _ref4 = (_ref2 = (_ref3 = weakmap[r]) != null ? _ref3.callbacks[k] : void 0) != null ? _ref2 : [];
+          for (_i = 0, _len = _ref4.length; _i < _len; _i++) {
+            callback = _ref4[_i];
+            callback();
+          }
+        }
+        return response;
+      };
+    },
+    observeMutations: function(obj, ref, keypath) {
+      var fn, functions, map, _base, _i, _len;
+      if (Array.isArray(obj)) {
+        map = this.weakReference(obj);
+        if (map.pointers == null) {
+          map.pointers = {};
+          functions = ['push', 'pop', 'shift', 'unshift', 'sort', 'reverse', 'splice'];
+          for (_i = 0, _len = functions.length; _i < _len; _i++) {
+            fn = functions[_i];
+            this.stubFunction(obj, fn);
+          }
+        }
+        if ((_base = map.pointers)[ref] == null) {
+          _base[ref] = [];
+        }
+        if (__indexOf.call(map.pointers[ref], keypath) < 0) {
+          return map.pointers[ref].push(keypath);
+        }
+      }
+    },
+    unobserveMutations: function(obj, ref, keypath) {
+      var keypaths, _ref1;
+      if (Array.isArray(obj && (obj[this.id] != null))) {
+        if (keypaths = (_ref1 = this.weakReference(obj).pointers) != null ? _ref1[ref] : void 0) {
+          return keypaths.splice(keypaths.indexOf(keypath), 1);
+        }
+      }
+    },
+    subscribe: function(obj, keypath, callback) {
+      var callbacks, value,
+        _this = this;
+      callbacks = this.weakReference(obj).callbacks;
+      if (callbacks[keypath] == null) {
+        callbacks[keypath] = [];
+        value = obj[keypath];
+        Object.defineProperty(obj, keypath, {
+          enumerable: true,
+          get: function() {
+            return value;
+          },
+          set: function(newValue) {
+            var _i, _len, _ref1;
+            if (newValue !== value) {
+              value = newValue;
+              _ref1 = callbacks[keypath];
+              for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+                callback = _ref1[_i];
+                callback();
+              }
+              return _this.observeMutations(newValue, obj[_this.id], keypath);
+            }
+          }
+        });
+      }
+      if (__indexOf.call(callbacks[keypath], callback) < 0) {
+        callbacks[keypath].push(callback);
+      }
+      return this.observeMutations(obj[keypath], obj[this.id], keypath);
+    },
+    unsubscribe: function(obj, keypath, callback) {
+      var callbacks;
+      callbacks = this.weakmap[obj[this.id]].callbacks[keypath];
+      callbacks.splice(callbacks.indexOf(callback), 1);
+      return this.unobserveMutations(obj[keypath], obj[this.id], keypath);
+    },
+    read: function(obj, keypath) {
+      return obj[keypath];
+    },
+    publish: function(obj, keypath, value) {
+      return obj[keypath] = value;
+    }
+  };
+
+  Rivets.factory = function(exports) {
+    exports._ = Rivets;
+    exports.binders = Rivets.binders;
+    exports.components = Rivets.components;
+    exports.formatters = Rivets.formatters;
+    exports.adapters = Rivets.adapters;
+    exports.config = Rivets.config;
+    exports.configure = function(options) {
+      var property, value;
+      if (options == null) {
+        options = {};
+      }
+      for (property in options) {
+        value = options[property];
+        Rivets.config[property] = value;
+      }
+    };
+    return exports.bind = function(el, models, options) {
+      var view;
+      if (models == null) {
+        models = {};
+      }
+      if (options == null) {
+        options = {};
+      }
+      view = new Rivets.View(el, models, options);
+      view.bind();
+      return view;
+    };
+  };
+
+  if (typeof exports === 'object') {
+    Rivets.factory(exports);
+  } else if (typeof define === 'function' && define.amd) {
+    define(['exports'], function(exports) {
+      Rivets.factory(this.rivets = exports);
+      return exports;
+    });
+  } else {
+    Rivets.factory(this.rivets = {});
+  }
+
+}).call(this);
