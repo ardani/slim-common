@@ -1123,7 +1123,6 @@
   };
 
   Rivets.binders['class-*'] = function(el, value) {
-    console.log(el, value);
     var elClass;
     elClass = " " + el.className + " ";
     if (!value === (elClass.indexOf(" " + this.args[0] + " ") !== -1)) {
