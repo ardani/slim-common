@@ -155,7 +155,8 @@ class User extends Model {
     }
 
     $newUser = Model::factory(get_called_class())->create();
-    $newUser->email_address = $userdata->email_address;
+    $newUser->name = trim($userdata->name);
+    $newUser->email_address = trim($userdata->email_address);
     $newUser->password = self::hashPassword($userdata->password);
     $newUser->utc_date_registered = date('c', time());
     $newUser->utc_date_confirmed = null;
