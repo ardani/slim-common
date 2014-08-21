@@ -123,9 +123,15 @@ value you put in that constant will be used for encrypting things like passwords
 You can easily generate a random key [here](http://randomkeygen.com/).
 Until you do that, all requests to your app will result in an error message.
 
-Is it working? If you can request the following URL, then it's working:
+Is it working? If you request the following URL
 
     /working
+
+and you see the following output
+
+    Yep. It's working.
+
+Then you have succeeded. Happy coding!
 
 ## It's not working?
 
