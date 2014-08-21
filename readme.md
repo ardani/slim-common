@@ -1,4 +1,4 @@
-# Jump start your next Slim Framework based MVP with this handy set of solutions to common problems.  
+# Jump start your next MVP with Slim Framework and this handy set of solutions to common problems.  
 
 This project is for anyone wanting to build an MVP using PHP, MySQL, and memcache. 
 I created it to help [me](http://twitter.com/collegeman) and [my own company](http://fatpandadev.com) go faster,
@@ -97,11 +97,13 @@ local git repository. Then add **slim-common** as a submodule:
 
 Copy the templates from `common/htdocs` into the root of your project:
 
-    your-app > cp -R common/templates ./
+    your-app > cp -R common/templates/* ./
 
-Optionally, setup a symlink for the CSS and JS packages that ride along with common
+Optionally, change directory into your new `./htdocs` folder, and setup a symlink 
+for the CSS and JS packages that ride along with common
 
-    your-app > ln -s common/htdocs ./htdocs/common
+    your-app > cd htdocs
+    your-app/htdocs > ln -s common/htdocs common
 
 Last step: you need to set your `AUTH_SALT` config setting in `./config.php`. The
 value you put in that constant will be used for encrypting things like passwords.
@@ -111,6 +113,26 @@ Until you do that, all requests to your app will result in an error message.
 Is it working? If you can request the following URL, then it's working:
 
     /working
+
+## It's not working?
+
+### I'm seeing a 404
+
+Make sure that the file `./htdocs/.htaccess` exists in your project path. The contents of the file should be as follows:
+
+    RewriteEngine On
+    RewriteBase /
+    RewriteRule ^index\.php$ - [L]
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+    RewriteRule . index.php [L]
+
+### I'm seeing something else
+
+If you're getting an error message, please [open an issue](https://github.com/collegeman/slim-common/issues) and report the problem.
+
+If you're not seeing any error messages, you probably need to check your web container. I like Apache.
 
 # Working with MySQL
 
