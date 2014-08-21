@@ -15,3 +15,5 @@ $app->get('/server', function() {
 $app->get('/working', function() {
   echo "Yep. It's working.";
 });
+
+$app->run();

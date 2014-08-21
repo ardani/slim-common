@@ -93,7 +93,17 @@ That said, this library does contain some templated code that you can use to qui
 
 # Getting Started
 
-Create a local folder in which to do your work. Switch to that folder, and initialize your 
+You'll need a runtime container—Apache or something else. Also, to make the most of the framework, 
+you'll need MySQL and memcache. On my laptop I'm running OSX 10.8.5 (I need to upgrade). 
+I use the copy of Apache that comes with the Mac, and I use [HomeBrew](http://brew.sh/)
+to install PHP, MySQL, and memcache.
+
+How you setup your runtime container is entirely up to you, but the following instructions
+do assume that you'll make the webroot of your app a folder inside your app called `./htdocs`&mdash;
+don't worry about creating that folder yourself, as there's a step below in which we do
+it by copying templates from common into your app.
+
+Next, create a local folder in which to do your work. Switch to that folder, and initialize your 
 local git repository. Then add **slim-common** as a submodule:
 
     your-app > git submodule add git@github.com:collegeman/slim-common common
@@ -135,12 +145,34 @@ Make sure that the file `./htdocs/.htaccess` exists in your project path. The co
 
 If you're getting an error message, please [open an issue](https://github.com/collegeman/slim-common/issues) and report the problem.
 
-If you're not seeing any error messages, you probably need to check your web container. I like Apache.
+If you're not seeing any error messages, the first thing you should do is check your PHP error log.
+
+If you're seeing this error in the log:
+
+    PHP Fatal error:  Uncaught exception 'Exception' with message 'Please set auth.salt config var to a strong key'
+
+Then you skipped that step about setting your `AUTH_SALT` in `./config.php`. Do that now.
+
+If you're not seeing anye rror messages, you probably need to check the health of your runtime container.
+
+## Routing requests
+
+You'll find a couple of pre-configured routes in `./dispatcher.php`. The default routes include:
+
+* **/info** &mdash; Executes `phpinfo()`
+* **/server** &mdash; Pretty-prints the contents of `$_SERVER`
+* **/working** &mdash; "Yep. It's working."
+
+The **/info** and **/server** routes won't work until you setup MySQL and user ACL features.
+
+[Read about how to use routing](http://docs.slimframework.com/#Routing-Overview) in the documentation for Slim Framework.
+
+# Working with configuration management
 
 # Working with MySQL
 
-# Working with memcache
-
 # Working with user auth and session management
 
-# Hosting a REST API
+# Working with memcache
+
+# Working with the REST API
