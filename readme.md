@@ -112,6 +112,12 @@ Copy the templates from `common/htdocs` into the root of your project:
 
     your-app > cp -R common/templates/* ./
 
+If you already have a `.gitignore` file, add `config.php` to the list. If you
+don't have a `.gitignore` file, you can copy the one from common into your
+own project:
+
+    your-app > cp common/templates/.gitignore ./
+
 Optionally, change directory into your new `./htdocs` folder, and setup a symlink 
 for the CSS and JS packages that ride along with common
 
@@ -176,6 +182,39 @@ The **/info** and **/server** routes won't work until you setup MySQL and user A
 [Read about how to use routing](http://docs.slimframework.com/#Routing-Overview) in the documentation for Slim Framework.
 
 # Working with configuration management
+
+First and foremost, remember that the [third principle](http://12factor.net/config) of the 
+[12 factor app](http://12factor.net/) is to store config in the environment.
+
+If you didn't do it when you were getting started, make sure that the local `./config.php` 
+file is ignored by git&mdash;you don't want to version control your local 
+configuration file, or any configuraiton file for that matter.
+
+The config system built-into **slim-common** is simple and flexible. 
+
+A global function
+`config($name, $default)` can be called in any context for loading a configuration
+value named `$name`. You should express `$name` in lowercase, using a dot notation
+to separate groups of configuration values, e.g., `"db1.host"`. Use the optional
+second argument `$default` to specify a default value to return in the even that
+configuration key `$name` does not exist.
+
+The config system will first look at constants for config values&mdash;this makes
+it possible to use the PHP file `./config.php` to store configuration in code. 
+A configuration key named `"db1.host"` would be found in a constant named `DB1_HOST`&mdash;
+all uppercase, and the dots are replaced by underscores.
+
+Next the config system will search the `$_SERVER` scope. Here the name is converted
+just as it is for the constant-based configuration pattern: `"db1.host"` would be
+found in `$_SERVER['DB1_HOST']`. This is my preferred method of configuration as it
+allows me to store config with the runtime container&mdash;in the case of Apache,
+in `<VirtualHost>` blocks using the `SetEnv` directive. You can read more about
+`SetEnv` [here](http://stackoverflow.com/questions/10902433/setting-environment-variables-for-accessing-in-php)
+and [here](http://httpd.apache.org/docs/2.2/mod/mod_env.html).
+
+The third and final place the config system will look is in the Slim Framework
+application configuration via `Slim::config()` which you can read more about
+[here](http://docs.slimframework.com/#Configuration-Overview).      
 
 # Working with MySQL
 
