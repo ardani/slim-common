@@ -10,8 +10,8 @@ and now you can use it too!
 Find a bug? [Open an issue on GitHub](https://github.com/collegeman/slim-common/issues).
 
 Want a new feature? [Fork me](https://github.com/collegeman/slim-common/fork) and open
-a pull request, but please grok the open issues first to make sure no one else is 
-already working on the same problem.
+a pull request, but please [grok the open issues](https://github.com/collegeman/slim-common/issues) first 
+to make sure no one else is already working on the same problem.
 
 ## A little history.
 
