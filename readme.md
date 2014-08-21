@@ -82,14 +82,14 @@ Maybe one day I'll add a composer description file to **slim-common** and strip 
 the third-party riders (like the Facebook PHP SDK), but until I have time for that kind of
 meta work, I'm going to stick with what gets the job done. 
 
-### slim-common is not an application template
+### slim-common is not a self-contained application template
 
 To use **slim-common** you need to *add* it to your own project, just as if it were a 
-giant library of code, because in fact it is a giant library of code. There's a little bit
-of setup, and then there's a four-line index.php file you need to create, and then you're
-off to the races!
+giant library of code, because in fact it is a giant library of code&mdash;several
+libraries, in fact. 
 
-That said, this library does contain some templated code that you can use to quickstart your own app.
+That said, there is some templated code in `./templates` that you can use to quickstart 
+your own app&mdash;just follow the instructions in [Getting Started](#getting-started).
 
 # Getting Started
 
@@ -207,6 +207,12 @@ You should express `$name` in lowercase, using a dot notation
 to separate groups of configuration values, e.g., `"db1.host"`. Use the optional
 second argument `$default` to specify a default value to return in the event that
 configuration key `$name` does not exist.
+
+The configuration system looks in three places for configuration values:
+
+* In constants, e.g., `define('DB1_HOST')`
+* In the `$_SERVER` global, e.g., `$_SERVER['DB1_HOST']`
+* And in the Slim Framework app, e.g., `Slim::config('db1.host')`
 
 The config system will first look at constants for config values&mdash;this makes
 it possible to use the PHP file `./config.php` to store configuration in code,
