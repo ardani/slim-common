@@ -209,7 +209,9 @@ second argument `$default` to specify a default value to return in the event tha
 configuration key `$name` does not exist.
 
 The config system will first look at constants for config values&mdash;this makes
-it possible to use the PHP file `./config.php` to store configuration in code. 
+it possible to use the PHP file `./config.php` to store configuration in code,
+*but you should only do this locally, for the convenience, and don't put your
+local configuration into versionc ontrol*. 
 A configuration key named `"db1.host"` would be found in a constant named `DB1_HOST`&mdash;
 all uppercase, and the dots are replaced by underscores.
 
