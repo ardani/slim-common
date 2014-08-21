@@ -199,9 +199,13 @@ The config system built-into **slim-common** is simple and flexible.
 
 A global function
 `config($name, $default)` can be called in any context for loading a configuration
-value named `$name`. You should express `$name` in lowercase, using a dot notation
+value named `$name`. As in
+
+    $app_id = config('facebook.app.id', $default);
+
+You should express `$name` in lowercase, using a dot notation
 to separate groups of configuration values, e.g., `"db1.host"`. Use the optional
-second argument `$default` to specify a default value to return in the even that
+second argument `$default` to specify a default value to return in the event that
 configuration key `$name` does not exist.
 
 The config system will first look at constants for config values&mdash;this makes
