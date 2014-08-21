@@ -149,8 +149,6 @@ Make sure that the file `./htdocs/.htaccess` exists in your project path. The co
 
 ### I'm seeing something else
 
-If you're getting an error message, please [open an issue](https://github.com/collegeman/slim-common/issues) and report the problem.
-
 If you're not seeing any error messages, the first thing you should do is check your PHP error log.
 
 If you're seeing this error in the log:
@@ -159,7 +157,11 @@ If you're seeing this error in the log:
 
 Then you skipped that step about setting your `AUTH_SALT` in `./config.php`. Do that now.
 
-If you're not seeing anye rror messages, you probably need to check the health of your runtime container.
+If you're seeing some other error message, please [open an issue](https://github.com/collegeman/slim-common/issues) and report the problem.
+
+If you're not seeing any error messages, you probably need to check the health of your runtime container.
+
+Can't get it working? [Open an issue](https://github.com/collegeman/slim-common/issues)&mdash;depending upon the nature of your problem, I am available for consulting.
 
 ## Routing requests
 
