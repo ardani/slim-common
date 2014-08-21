@@ -1,0 +1,1 @@
+Put your view templates in here.

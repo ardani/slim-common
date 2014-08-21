@@ -1,12 +1,12 @@
 <?php
 // Load configuration file, affects local only:
 @include(ROOT.'/config.php');
-// Load Slim
+// Load Slim:
 require(ROOT.'/common/Slim/Slim.php');
+
 \Slim\Slim::registerAutoloader();
-/**
- * helper autoloader
- */
+
+// Register an autoloader for slim-common's helpers
 spl_autoload_register(function($className) {
   $baseDir = __DIR__.DIRECTORY_SEPARATOR;
   $className = ltrim($className, '\\');
@@ -23,28 +23,34 @@ spl_autoload_register(function($className) {
     return require($fileName);
   }
 });
+
 // Initialize Slim:
 $app = new \Slim\Slim(array(
-// Template path: default is /templates in the Root
-'templates.path' => ROOT.'/templates',
-// Logging: default is enabled; but log level controlled by LOG_LEVEL constant
-'log.enabled' => true
+  // Template path: default is /templates in the Root
+  'templates.path' => ROOT.'/templates',
+  // Logging: default is enabled; but log level controlled by LOG_LEVEL constant
+  'log.enabled' => true
 ));  
+
 // Load config management library:
 require(ROOT.'/common/config.php');
+
 // Set logging level:
 $log = $app->getLog();
 $log->setLevel(config('log.level', 0));
+
 // Load default libraries:
 require(ROOT.'/common/memcached.php');
 require(ROOT.'/common/db.php');
 require(ROOT.'/common/session.php');
+
 // Setup the slim.after hook for printing DB log
 $app->hook('slim.after', function() use ($app) {
   foreach(ORM::get_query_log() as $entry) {
     $app->getLog()->debug($entry);
   }
 });
+
 // Add API functionality
 if (config('use.api', false)) {
   require(ROOT.'/common/api.php');

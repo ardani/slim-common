@@ -1,0 +1,1 @@
+# coming soon: SQL statements for the session table structure
