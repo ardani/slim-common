@@ -5,6 +5,8 @@ This project is for anyone wanting to build a web app or web service MVP using
 I created it to help [myself](http://twitter.com/collegeman) and [my company](http://fatpandadev.com) go faster,
 and now you can use it too!
 
+Ready to get started? [Go, go, go](#getting-started).
+
 ## Want to help make it better?
 
 Find a bug? [Open an issue on GitHub](https://github.com/collegeman/slim-common/issues).
