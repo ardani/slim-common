@@ -183,8 +183,8 @@ The **/info** and **/server** routes won't work until you setup MySQL and user A
 
 # Configuration management
 
-First and foremost, remember that the [third principle](http://12factor.net/config) of the 
-[12 factor app](http://12factor.net/) is to store config in the environment. I like
+First and foremost, remember that the [Config](http://12factor.net/config) factor of 
+[The Twelve-Factor App](http://12factor.net/) is to store config in the environment. I like
 to remember this easily as, "Don't put API keys in your code."
 
 Storing configuration in the environment also allows you to have multiple
