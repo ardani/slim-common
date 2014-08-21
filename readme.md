@@ -1,8 +1,9 @@
 # Jump start your next MVP with Slim Framework and this handy set of solutions to common problems.  
 
-This project is for anyone wanting to build an MVP using PHP, MySQL, and memcache. 
-I created it to help [me](http://twitter.com/collegeman) and [my own company](http://fatpandadev.com) go faster,
-and now you can use it too.
+This project is for anyone wanting to build a web app or web service MVP using 
+[Slim Framework](http://slimframework.com), running on PHP, MySQL, and memcache. 
+I created it to help [myself](http://twitter.com/collegeman) and [my company](http://fatpandadev.com) go faster,
+and now you can use it too!
 
 ## Want to help make it better?
 
