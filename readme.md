@@ -199,7 +199,7 @@ The config system built-into **slim-common** is simple and flexible.
 
 A global function
 `config($name, $default)` can be called in any context for loading a configuration
-value named `$name`. As in
+value named `$name`, for example:
 
     $app_id = config('facebook.app.id', $default);
 
