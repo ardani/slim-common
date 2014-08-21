@@ -1,6 +1,6 @@
 # Jump start your next Slim Framework based MVP with this handy set of solutions to common problems.  
 
-This project is for anyone wanting to build an MVP using PHP, MySql, and memcache. 
+This project is for anyone wanting to build an MVP using PHP, MySQL, and memcache. 
 I created it to help [me](http://twitter.com/collegeman) and [my own company](http://fatpandadev.com) go faster,
 and now you can use it too.
 
@@ -9,7 +9,7 @@ and now you can use it too.
 Find a bug? [Open an issue on GitHub](https://github.com/collegeman/slim-common/issues).
 
 Want a new feature? [Fork me](https://github.com/collegeman/slim-common/fork) and open
-a pull request, but make sure to scan open issues first to make sure no one else is 
+a pull request, but please grok the open issues first to make sure no one else is 
 already working on the same problem.
 
 ## A little history.
@@ -18,12 +18,12 @@ I like dreaming about products I want to build. And most of the time when I'm dr
 products, I'm dreaming about SaaS. Afterall, I've been writing code for the Web a long time.
 
 When I first picked up PHP it was because it was free and Microsoft wasn't. Later, when
-PHP became the focus of my development, it was because PHP was far easier for building and
-and testing iteratively than Java.
+PHP became the focus of my development, it was because PHP was far easier than Java
+for building iteratively and testing.
 
-And that was before I discovered CodeIgniter, WordPress, and countless other amazing open
-source projects and communities, all of them born of this wonderful and sometimes frustrating
-language we call PHP.
+That was before I discovered CodeIgniter, WordPress, and countless other amazing open
+source projects and communities. All of them were born of this wonderful and sometimes 
+frustrating language we call PHP. I was hooked.
 
 Sometime last year I discovered [Slim Framework](http://slimframework.com), and I felt emboldened 
 by its simplicity. Not long after that I discovered [Paris and Idiorm](http://j4mie.github.io/idiormandparis/), 
@@ -40,8 +40,8 @@ And with that, **slim-common** was born.
 ### slim-common is a package of solutions
 
 I started by solving some common lower-level problems: things like how to manage configuration. But
-soon I moved on to larger challenges&mdash;challenges that required me incorporate things like
-the Facebook PHP SDK. More challenging though they may be, the problems I was solving were still
+soon I moved on to larger challenges&mdash;challenges that required me to incorporate third-party
+libraries like the Facebook PHP SDK. More challenging though they may be, the problems I was solving were still
 *common* problems, so into the library went Facebook's code.
 
 ### slim-common provides these essential toolkits/solutions:
@@ -93,18 +93,20 @@ That said, this library does contain some templated code that you can use to qui
 Create a local folder in which to do your work. Switch to that folder, and initialize your 
 local git repository. Then add **slim-common** as a submodule:
 
-    git submodule add git@github.com:collegeman/slim-common common
+    your-app > git submodule add git@github.com:collegeman/slim-common common
 
-Copy the templates in `./htdocs` into your own path.
+Copy the templates from `common/htdocs` into the root of your project:
 
-    cp -R common/templates ./
+    your-app > cp -R common/templates ./
 
 Optionally, setup a symlink for the CSS and JS packages that ride along with common
 
-    ln -s common/htdocs ./htdocs/common
+    your-app > ln -s common/htdocs ./htdocs/common
 
-Last step: you need to set your `AUTH_SALT` config setting in `./config.php`. Until you do this,
-all requests to your app will result in an error.
+Last step: you need to set your `AUTH_SALT` config setting in `./config.php`. The
+value you put in that constant will be used for encrypting things like passwords.
+You can easily generate a random key [here](http://randomkeygen.com/).
+Until you do that, all requests to your app will result in an error message.
 
 Is it working? If you can request the following URL, then it's working:
 
