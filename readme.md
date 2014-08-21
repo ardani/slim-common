@@ -181,7 +181,7 @@ The **/info** and **/server** routes won't work until you setup MySQL and user A
 
 [Read about how to use routing](http://docs.slimframework.com/#Routing-Overview) in the documentation for Slim Framework.
 
-# Working with configuration management
+# Configuration management
 
 First and foremost, remember that the [third principle](http://12factor.net/config) of the 
 [12 factor app](http://12factor.net/) is to store config in the environment.
@@ -216,10 +216,10 @@ The third and final place the config system will look is in the Slim Framework
 application configuration via `Slim::config()` which you can read more about
 [here](http://docs.slimframework.com/#Configuration-Overview).      
 
-# Working with MySQL
+# MySQL, Idiorm, and Paris
 
-# Working with user auth and session management
+# User Auth and ACL
 
-# Working with memcache
+# Memcache
 
-# Working with the REST API
+# Building REST APIs
