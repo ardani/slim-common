@@ -31,10 +31,11 @@ Optionally, change directory into your new `./htdocs` folder, and setup a symlin
 for the CSS and JS packages that ride along with common
 
     your-app > cd htdocs
-    your-app/htdocs > ln -s common/htdocs common
+    your-app/htdocs > ln -s ../common/htdocs common
 
-Last step: you need to set your `AUTH_SALT` config setting in `./config.php`. The
-value you put in that constant will be used for encrypting things like passwords.
+Last step: you need to set your `AUTH_SALT` config setting in `./config.php`. 
+
+The value you put in that constant will be used for encrypting things like passwords.
 You can easily generate a random key [here](http://randomkeygen.com/).
 Until you do that, all requests to your app will result in an error message.
 
