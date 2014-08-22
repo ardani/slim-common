@@ -5,7 +5,9 @@ This project is for anyone wanting to build a web app or web service MVP using
 I created it to help [myself](http://twitter.com/collegeman) and [my company](http://fatpandadev.com) go faster,
 and now you can use it too!
 
-Ready to get started? [Read the docs](https://github.com/collegeman/slim-common/tree/master/docs/index.md).
+## Ready to get started? 
+
+Just go [read the docs](https://github.com/collegeman/slim-common/tree/master/docs/index.md).
 
 ## Want to help make it better?
 
@@ -97,3 +99,7 @@ libraries, in fact.
 
 That said, there is some templated code in `./templates` that you can use to quickstart 
 your own app&mdash;just follow the instructions in [the docs](https://github.com/collegeman/slim-common/tree/master/docs/index.md).
+
+## *Now* are you ready to get started? 
+
+Just go [read the docs](https://github.com/collegeman/slim-common/tree/master/docs/index.md).
