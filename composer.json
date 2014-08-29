@@ -1,0 +1,13 @@
+{
+  "name": "collegeman/slim-rest",
+  "type": "library",
+  "autoload": {
+    "psr-0": {
+      "Collegeman\\Slim\\Rest": "src"
+    }
+  },
+  "require": {
+    "php": ">=5.3.*",
+    "j4mie/paris": "1.5.*"
+  }
+}
