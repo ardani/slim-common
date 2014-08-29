@@ -1,13 +1,14 @@
 {
   "name": "collegeman/slim-rest",
+  "description": "Some simple Middleware and conventions for using Slim Framework to build a REST API",
   "type": "library",
+  "license": "MIT",
   "autoload": {
     "psr-0": {
-      "Collegeman\\Slim\\Rest": "src"
+      "Collegeman\\Slim\\Rest": "src/"
     }
   },
   "require": {
-    "php": ">=5.3.*",
     "j4mie/paris": "1.5.*"
   }
 }
