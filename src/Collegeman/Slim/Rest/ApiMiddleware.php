@@ -111,6 +111,15 @@ class ApiMiddleware extends \Slim\Middleware {
     }
   }
 
+  /**
+   * Create an instance of ApiMiddleare and install it into the
+   * given Slim Application.
+   * @param \Slim\Slim The application instance
+   * @param String (optional) When provided, a root path in which
+   * to search for Model classes. Sets up an autoloader per PHP
+   * Autoloading Standard PSR-0.
+   * @see http://www.php-fig.org/psr/psr-0/
+   */
   static function addToApp($app, $pathToLib = null) {
     if (!is_null($pathToLib)) {
 
