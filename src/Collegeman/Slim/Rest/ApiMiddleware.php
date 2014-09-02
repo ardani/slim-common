@@ -123,8 +123,8 @@ class ApiMiddleware extends \Slim\Middleware {
           $className = substr($className, $lastNsPos + 1);
           $fileName  .= str_replace('\\', DIRECTORY_SEPARATOR, strtolower($namespace)) . DIRECTORY_SEPARATOR;
         }
-        $fileName .= str_replace('_', DIRECTORY_SEPARATOR, strtolower($className)) . '.php';
-
+        $fileName .= DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR, strtolower($className)) . '.php';
+        
         if (file_exists($fileName)) {
           return require($fileName);
         }
