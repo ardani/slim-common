@@ -19,6 +19,7 @@
     "monolog/monolog": "1.*",
     "slim/views": "0.*",
     "twig/twig": "1.*",
-    "twbs/bootstrap": "3.2.*"
+    "twbs/bootstrap": "3.2.*",
+    "mandrill/mandrill": "1.0.*"
   }
 }

@@ -147,10 +147,18 @@ class RestMiddleware extends \Slim\Middleware {
     $app->map('/api/:model(/:id(/:function)?)?', function($model, $id = false, $function = false) use ($app) {
       RestMiddleware::enable();
       $req = $app->request();
+
+      if ($model === 'user') {
+        $model = '\Collegeman\Slim\Common\User';
+      }
       
       // if the class doesn't exist, we're done
       if (!class_exists($model)) {
         throw new AccessException('Not found', 403);
+      }
+
+      if (!is_subclass_of($model, 'Model')) {
+        throw new AccessException('Invalid: not a Model', 403);
       }
 
       // if $id is non-numeric, then we treat it as a function name
@@ -179,7 +187,7 @@ class RestMiddleware extends \Slim\Middleware {
         if (!$instance = call_user_func_array($load, array($id, $fields))) {
           throw new AccessException('Not found', 404);
         }
-      
+
         // don't allow access to private models
         if ($instance instanceof PrivateInterface) {
           throw new AccessException();
