@@ -1,7 +1,7 @@
 <?php
-namespace Collegeman\Slim\Rest;
+namespace Collegeman\Slim\Common;
 
-class ApiMiddleware extends \Slim\Middleware {
+class RestMiddleware extends \Slim\Middleware {
   private static $result;
   private static $disabled = true;
   
@@ -112,8 +112,7 @@ class ApiMiddleware extends \Slim\Middleware {
   }
 
   /**
-   * Create an instance of ApiMiddleare and install it into the
-   * given Slim Application.
+   * Create an instance of RestMiddleware and install it into the given Slim Application.
    * @param \Slim\Slim The application instance
    * @param String (optional) When provided, a root path in which
    * to search for Model classes. Sets up an autoloader per PHP
@@ -142,11 +141,11 @@ class ApiMiddleware extends \Slim\Middleware {
     }
 
 
-    $app->add(new ApiMiddleware());
+    $app->add(new RestMiddleware());
 
     // Setup generic model access for all relevant request types
     $app->map('/api/:model(/:id(/:function)?)?', function($model, $id = false, $function = false) use ($app) {
-      ApiMiddleware::enable();
+      RestMiddleware::enable();
       $req = $app->request();
       
       // if the class doesn't exist, we're done
@@ -193,7 +192,7 @@ class ApiMiddleware extends \Slim\Middleware {
 
       // if no other function is listed, return the instance
       if ($req->isGet() && !$function) {
-        return ApiMiddleware::result( $instance );  
+        return RestMiddleware::result( $instance );  
       }
 
       // allow for JSON input or $_POST
@@ -201,25 +200,25 @@ class ApiMiddleware extends \Slim\Middleware {
 
       // create request?
       if ($req->isPost() && !$function) {
-        return ApiMiddleware::result( call_user_func_array(array($model, 'create'), array($input)) );
+        return RestMiddleware::result( call_user_func_array(array($model, 'create'), array($input)) );
       }
 
       // update request?
       if ($req->isPut() && !$function) {
-        return ApiMiddleware::result( call_user_func_array(array($instance, 'update'), array($input)) );
+        return RestMiddleware::result( call_user_func_array(array($instance, 'update'), array($input)) );
       }
 
       // delete request?
       if ($req->isDelete() && $id !== false && !$function) {
-        return ApiMiddleware::result( call_user_func_array(array($model, 'trash'), array($id, $input)) );
+        return RestMiddleware::result( call_user_func_array(array($model, 'trash'), array($id, $input)) );
       }
 
       if ($function) {
-        if (ApiMiddleware::isCallable($model, $function)) {
+        if (RestMiddleware::isCallable($model, $function)) {
           if ($id !== false) {
-            return ApiMiddleware::result( call_user_func_array(array($instance, $function), array($input)) );
+            return RestMiddleware::result( call_user_func_array(array($instance, $function), array($input)) );
           } else {
-            return ApiMiddleware::result( call_user_func_array(array($model, $function), array($input)) );
+            return RestMiddleware::result( call_user_func_array(array($model, $function), array($input)) );
           }
         } else {
           throw new AccessException();
