@@ -6,14 +6,12 @@
   "autoload": {
     "psr-0": {
       "Collegeman\\Slim\\Common": "src/"
-    }
+    },
+    "files": ["src/functions.php"]
   },
   "require": {
     "j4mie/paris": "1.5.*",
     "facebook/php-sdk": "3.*",
     "rmccue/requests": "1.6.*"
-  },
-  "autoload": {
-    "files": ["src/functions.php"]
   }
 }
