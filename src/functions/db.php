@@ -1,6 +1,4 @@
 <?php
-
-
 /**
  * Parse the given input into an array, and then backfill
  * with the contents of $defaults, if given.
