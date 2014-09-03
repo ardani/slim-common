@@ -10,6 +10,6 @@
   },
   "require": {
     "j4mie/paris": "1.5.*",
-    "facebook/facebook-php-sdk-v4": "4.*"
+    "facebook/php-sdk-v4": "4.*"
   }
 }
