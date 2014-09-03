@@ -1,11 +1,11 @@
 {
-  "name": "collegeman/slim-rest",
-  "description": "Some simple Middleware and conventions for using Slim Framework to build a REST API",
+  "name": "collegeman/slim-common",
+  "description": "Jump start your next MVP web app with Slim Framework and this handy set of solutions to common problems.",
   "type": "library",
   "license": "MIT",
   "autoload": {
     "psr-0": {
-      "Collegeman\\Slim\\Rest": "src/"
+      "Collegeman\\Slim\\Common": "src/"
     }
   },
   "require": {
