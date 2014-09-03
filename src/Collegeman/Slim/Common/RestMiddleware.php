@@ -181,11 +181,11 @@ class RestMiddleware extends \Slim\Middleware {
         }
       
         // don't allow access to private models
-        if ($instance instanceof PrivateModel) {
+        if ($instance instanceof PrivateInterface) {
           throw new AccessException();
         }
       } else {
-        if ($model instanceof PrivateModel) {
+        if ($model instanceof PrivateInterface) {
           throw new AccessException();
         }
       }  
