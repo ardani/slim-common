@@ -1,5 +1,5 @@
 <?php
-namespace Collegeman\Slim\Common;
+namespace Collegeman\Slim\Common\Lib;
 
 /**
  * A marker to use when Model code should not be exposed

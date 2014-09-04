@@ -1,5 +1,5 @@
 <?php
-use Collegeman\Slim\Common\User;
+use Collegeman\Slim\Common\Lib\User;
 use Collegeman\Slim\Common\AccessException;
 
 session_cache_limiter(false);

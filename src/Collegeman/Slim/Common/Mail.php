@@ -1,4 +1,6 @@
 <?php
+namespace Collegeman\Slim\Common;
+
 class Mail {
 
   function send($msg = '', $data = array()) {

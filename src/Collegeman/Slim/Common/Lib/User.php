@@ -1,5 +1,7 @@
 <?php
-namespace Collegeman\Slim\Common;
+namespace Collegeman\Slim\Common\Lib;
+
+use Model;
 
 class User extends \Model {
 

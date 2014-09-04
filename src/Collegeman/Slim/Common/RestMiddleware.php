@@ -2,7 +2,9 @@
 namespace Collegeman\Slim\Common;
 
 class RestMiddleware extends \Slim\Middleware {
+
   private static $result;
+  
   private static $disabled = true;
   
   static function result($result) {
@@ -114,17 +116,23 @@ class RestMiddleware extends \Slim\Middleware {
   /**
    * Create an instance of RestMiddleware and install it into the given Slim Application.
    * @param \Slim\Slim The application instance
-   * @param String (optional) When provided, a root path in which
-   * to search for Model classes. Sets up an autoloader per PHP
-   * Autoloading Standard PSR-0.
+   * @param mixed (optional) Where should model classes be loaded from?
+   * When a path is provided, an SPL loader is registered that implements Autoloading Standard PSR-0
+   * using the given path as the root.
+   * When a function is provided, that function is registered as an SPL loader.
    * @see http://www.php-fig.org/psr/psr-0/
    */
-  static function addToApp($app, $pathToLib = null) {
-    if (!is_null($pathToLib)) {
+  static function addToApp($app, $spl = null) {
+    
+    if (!is_null($spl)) {
+      $spl = '../lib'; // relative to htdocs/index.php
+    }
 
-      spl_autoload_register(function($className) use ($pathToLib) {
+    if (is_string($spl)) {
+
+      spl_autoload_register(function($className) use ($spl) {
         $className = ltrim($className, '\\');
-        $fileName  = $pathToLib;
+        $fileName  = $spl;
         $namespace = '';
         if ($lastNsPos = strripos($className, '\\')) {
           $namespace = substr($className, 0, $lastNsPos);
@@ -132,11 +140,15 @@ class RestMiddleware extends \Slim\Middleware {
           $fileName  .= str_replace('\\', DIRECTORY_SEPARATOR, strtolower($namespace)) . DIRECTORY_SEPARATOR;
         }
         $fileName .= DIRECTORY_SEPARATOR . str_replace('_', DIRECTORY_SEPARATOR, strtolower($className)) . '.php';
-        
+
         if (file_exists($fileName)) {
           return require($fileName);
         }
       });
+
+    } else if (is_callable($spl)) {
+
+      spl_autoload_register($spl);
 
     }
 
@@ -148,17 +160,27 @@ class RestMiddleware extends \Slim\Middleware {
       RestMiddleware::enable();
       $req = $app->request();
 
-      if ($model === 'user') {
-        $model = '\Collegeman\Slim\Common\User';
+      $model = strtolower($model);
+
+      if ($model === 'model') {
+        throw new AccessException("Baseclass 'Model' cannot be access directly.", 403);
       }
-      
-      // if the class doesn't exist, we're done
+
+      // if the class doesn't exist...
       if (!class_exists($model)) {
-        throw new AccessException('Not found', 403);
+        // ... first try a built-in model
+        $builtin = "Collegeman\\Slim\\Common\\Lib\\{$model}";
+        // but if that doesn't exist either, we're done...
+        if (!class_exists($builtin)) {
+          echo $builtin;
+          throw new AccessException("Model '{$model}' does not exist.", 403);
+        } else {
+          $model = $builtin;
+        }
       }
 
       if (!is_subclass_of($model, 'Model')) {
-        throw new AccessException('Invalid: not a Model', 403);
+        throw new AccessException("Class '{$model}' must be a subclass of Model.", 403);
       }
 
       // if $id is non-numeric, then we treat it as a function name
@@ -177,7 +199,7 @@ class RestMiddleware extends \Slim\Middleware {
 
       // if an ID is provided
       if ($id !== false) {
-        $load = array(ucwords($model), 'load');
+        $load = array($model, 'load');
 
         if (!is_callable($load)) {
           throw new AccessException('Invalid', 404);
