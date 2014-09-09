@@ -1,5 +1,6 @@
 <?php
 use Collegeman\Slim\Common\Lib\User;
+use Collegeman\Slim\Common\Lib\Role;
 use Collegeman\Slim\Common\AccessException;
 
 session_cache_limiter(false);
@@ -124,7 +125,7 @@ function set_session($user, $remember = false) {
 function has_session() {
   global $current_user;
 
-  if ($current_user !== false) {
+  if ($current_user != false) {
     return $current_user;
   }
 

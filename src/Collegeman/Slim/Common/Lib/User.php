@@ -2,8 +2,11 @@
 namespace Collegeman\Slim\Common\Lib;
 
 use Model;
+use Collegeman\Slim\Common\Bcrypt;
 
 class User extends \Model {
+
+  public static $_table = 'user';
 
   protected $_roles = false;
   protected $_prefs = false;
@@ -35,7 +38,7 @@ class User extends \Model {
       if (!$user) {
         // hmm... double exception: we found an user, and then
         // we couldn't find the user
-        throw new Exception("Oops! Something strange happened. Please try again.");
+        throw new \Exception("Oops! Something strange happened. Please try again.");
       }
     }
 
@@ -49,7 +52,7 @@ class User extends \Model {
    */
   function startUserLoginSession($window = 5) {
     if ($window < 1) {
-      throw new Exception("Invalid window size: must be greater than 0 minutes.");
+      throw new \Exception("Invalid window size: must be greater than 0 minutes.");
     }
 
     // start with random unique string
@@ -117,17 +120,17 @@ class User extends \Model {
     $userdata = (object) $userdata;
     // validation
     if (!isset($userdata->email_address)) {
-      throw new Exception("E-mail address is required");
+      throw new \Exception("E-mail address is required");
     }
     if (!isset($userdata->password)) {
       if ($generate_password) {
         $userdata->password = md5(uniqid().config('auth.salt'));
       } else {
-        throw new Exception("Password is required");
+        throw new \Exception("Password is required");
       }
     }
     if (strlen($userdata->password) < 8) {
-      throw new Exception("Password is too short: please use at least 8 characters");
+      throw new \Exception("Password is too short: please use at least 8 characters");
     }
     // is email_address available?
     if (self::isEmailAddressRegistered($userdata->email_address)) {
@@ -168,18 +171,18 @@ class User extends \Model {
     $userdata = (object) $userdata;
     // validation
     if (!isset($userdata->email_address)) {
-      throw new Exception("E-mail address is required");
+      throw new \Exception("E-mail address is required");
     }
     if (!isset($userdata->password)) {
-      throw new Exception("Password is required");
+      throw new \Exception("Password is required");
     }
     
     $user = Model::factory(get_called_class())->where('email_address', $userdata->email_address)->find_one();
     if (!$user) {
-      throw new Exception("Oops! No user is registered for that e-mail address.");
+      throw new \Exception("Oops! No user is registered for that e-mail address.");
     }
     if (!self::verifyPassword($userdata->password, $user->password)) {
-      throw new Exception("Oops! That password is incorrect.");
+      throw new \Exception("Oops! That password is incorrect.");
     }
 
     $user->utc_date_last_login = date('c', true);
@@ -248,10 +251,10 @@ class User extends \Model {
       foreach($prefs as $pname => $value) {
         $name = 'pref_'.trim($pname);
         if (strlen($name) > UserSetting::MAX_NAME_LENGTH) {
-          throw new Exception("Preference name [{$pname}] is too long");
+          throw new \Exception("Preference name [{$pname}] is too long");
         }
         if (!preg_match('/^[\w_-]+$/', $name)) {
-          throw new Exception("Invalid preference name [{$pname}] is too long"); 
+          throw new \Exception("Invalid preference name [{$pname}] is too long"); 
         }
         ORM::raw_execute("
           INSERT INTO user_setting (
@@ -320,7 +323,7 @@ class User extends \Model {
   }
 
   function roles() {
-    return $this->has_many_through('Role');
+    return $this->has_many_through('Collegeman\Slim\Common\Lib\Role');
   }
 
   function getRoles($flush = false) {
@@ -342,7 +345,7 @@ class User extends \Model {
       $role = Role::getOrCreate($role_name);
       if (true === (bool) $bool) {
         if (!$this->id()) {
-          throw new Exception("Cannot add roles to an unsaved User");
+          throw new \Exception("Cannot add roles to an unsaved User");
         }
         $rel = Model::factory('RoleUser');
         $rel->role_id = $role->id;
@@ -365,7 +368,7 @@ class User extends \Model {
     } else {
       if (true === (bool) $bool) {
         if (!$this->id()) {
-          throw new Exception("Cannot put an unsaved User into groups");
+          throw new \Exception("Cannot put an unsaved User into groups");
         }
         $group = Model::factory('Group');
         $group->group = $group;

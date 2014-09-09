@@ -37,18 +37,18 @@ class RestMiddleware extends \Slim\Middleware {
 
     if (empty(self::$reflections[$class])) {
       self::$reflections[$class] = array(
-        'class' => new ReflectionClass($class)
+        'class' => new \ReflectionClass($class)
       );
     }
     if (empty(self::$reflections[$class]['methods'][$method])) {
       try {
         self::$reflections[$class]['methods'][$method] = self::$reflections[$class]['class']->getMethod($method);
-      } catch (Exception $e) {
+      } catch (\Exception $e) {
         self::$reflections[$class]['methods'][$method] = false;
       }
     }
     if (self::$reflections[$class]['methods'][$method] === false) {
-      throw new Exception("Method does not exist: {$class}::{$method}");
+      throw new \Exception("Method does not exist: {$class}::{$method}");
     }
     if (empty(self::$reflections[$class]['doc'][$method])) {
       self::$reflections[$class]['doc'][$method] = self::$reflections[$class]['methods'][$method]->getDocComment();
@@ -71,7 +71,7 @@ class RestMiddleware extends \Slim\Middleware {
       $res['Content-Type'] = 'application/json';
       $result = self::prepForEncoding(self::$result);
       $res->status(200);
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       if ($e instanceof PDOException) {
         $log = $app->getLog();
         foreach(ORM::get_query_log() as $entry) {
@@ -94,7 +94,7 @@ class RestMiddleware extends \Slim\Middleware {
   }
 
   private function prepForEncoding($r) {
-    if ($r instanceof Model || $r instanceof ORM) {
+    if ($r instanceof \Model || $r instanceof \ORM) {
       return self::prepForEncoding($r->as_array());
     } else if (is_array($r)) {
       $array = array();

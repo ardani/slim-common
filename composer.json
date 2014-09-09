@@ -19,7 +19,6 @@
     "monolog/monolog": "1.*",
     "slim/views": "0.*",
     "twig/twig": "1.*",
-    "twbs/bootstrap": "3.2.*",
     "mandrill/mandrill": "1.0.*",
     "michelf/php-markdown": "1.4.*",
     "stripe/stripe-php": "1.*"

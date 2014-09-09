@@ -42,9 +42,9 @@ $app->view->parserOptions = array(
   'autoescape' => true
 );
 
-$app->view->parserExtensions = array(new \Slim\Views\TwigExtension());
-
-// add REST API features
-\Collegeman\Slim\Common\RestMiddleware::addToApp($app, '../lib');
+$app->view->parserExtensions = array(
+  new \Slim\Views\TwigExtension(),
+  new \Collegeman\Slim\Common\TwigExtension()
+);
 
 return $app;
