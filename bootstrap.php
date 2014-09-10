@@ -22,15 +22,22 @@ $app = new \Slim\Slim(array(
   'templates.path' => '../templates'
 ));
 
-// Create monolog logger and store logger in container as singleton 
+// Set logging level:
+$log = $app->getLog();
+$log->setLevel(config('log.level', 0));
+
+/*
+XXX: don't do this because we don't want to store log files locally
+// Create monolog logger and store logger in container as singleton
 // (Singleton resources retrieve the same log resource definition each time)
 $app->container->singleton('log', function () {
   $log = new \Monolog\Logger('slim-common');
-  $log->pushHandler(new \Monolog\Handler\StreamHandler('../logs/app.log', 
+  $log->pushHandler(new \Monolog\Handler\StreamHandler('../logs/app.log',
     // TODO: set this by config
     \Monolog\Logger::DEBUG));
   return $log;
 });
+*/
 
 // Prepare view
 $app->view(new \Slim\Views\Twig());
