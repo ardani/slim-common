@@ -4,9 +4,9 @@ namespace Collegeman\Slim\Common;
 class RestMiddleware extends \Slim\Middleware {
 
   private static $result;
-  
+
   private static $disabled = true;
-  
+
   static function result($result) {
     self::$result = $result;
   }
@@ -123,7 +123,7 @@ class RestMiddleware extends \Slim\Middleware {
    * @see http://www.php-fig.org/psr/psr-0/
    */
   static function addToApp($app, $spl = null) {
-    
+
     if (!is_null($spl)) {
       $spl = '../lib'; // relative to htdocs/index.php
     }
@@ -169,7 +169,7 @@ class RestMiddleware extends \Slim\Middleware {
       // if the class doesn't exist...
       if (!class_exists($model)) {
         // ... first try a built-in model
-        $builtin = "Collegeman\\Slim\\Common\\Lib\\{$model}";
+        $builtin = "Collegeman\\Slim\\Common\\Lib\\User";
         // but if that doesn't exist either, we're done...
         if (!class_exists($builtin)) {
           echo $builtin;
@@ -193,7 +193,7 @@ class RestMiddleware extends \Slim\Middleware {
       if ($req->isGet() && !$id && !$function) {
         $function = 'search';
       }
-      
+
       // look for the fields arg
       $fields = $req->isGet() && ($fieldList = $req->get('fields')) ? array_map('trim', explode(',', $fieldList)) : array();
 
@@ -218,11 +218,11 @@ class RestMiddleware extends \Slim\Middleware {
         if ($model instanceof PrivateInterface) {
           throw new AccessException();
         }
-      }  
+      }
 
       // if no other function is listed, return the instance
       if ($req->isGet() && !$function) {
-        return RestMiddleware::result( $instance );  
+        return RestMiddleware::result( $instance );
       }
 
       // allow for JSON input or $_POST
