@@ -160,16 +160,16 @@ class RestMiddleware extends \Slim\Middleware {
       RestMiddleware::enable();
       $req = $app->request();
 
-      $model = strtolower($model);
+      $model = ucwords(strtolower($model));
 
-      if ($model === 'model') {
+      if ($model === 'Model') {
         throw new AccessException("Baseclass 'Model' cannot be access directly.", 403);
       }
 
       // if the class doesn't exist...
       if (!class_exists($model)) {
         // ... first try a built-in model
-        $builtin = "Collegeman\\Slim\\Common\\Lib\\User";
+        $builtin = "Collegeman\\Slim\\Common\\Lib\\{$model}";
         // but if that doesn't exist either, we're done...
         if (!class_exists($builtin)) {
           echo $builtin;
