@@ -1,6 +1,8 @@
 <?php
 namespace Collegeman\Slim\Common;
 
+use \Requests;
+
 /**
  * Simplest possible helper for working with the Embed.ly API.
  */
