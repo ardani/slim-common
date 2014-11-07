@@ -30,7 +30,7 @@ class Embedly {
       'url' => $url
     ), $opts));
 
-    $req = Requests::get($api);
+    $req = \Requests::get($api);
     $res = json_decode($req->body);
     if ($req->status_code !== 200) {
       throw new Exception($res->error_message, $res->error_code);
@@ -56,7 +56,7 @@ class Embedly {
       'url' => $url
     ), $opts));
 
-    $req = Requests::get($api);
+    $req = \Requests::get($api);
     $res = json_decode($req->body);
     if ($req->status_code !== 200) {
       throw new Exception($res->error_message, $res->error_code);
