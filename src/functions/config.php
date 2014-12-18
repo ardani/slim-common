@@ -5,7 +5,7 @@
  * finding none there it looks to Slim's $app->config, falling
  * back lastly on $default.
  * @param String Name of config. For searching constants and $_SERVER
- * environment values, $name is converted as follows: periods 
+ * environment values, $name is converted as follows: periods
  * are converted to underscores,
  * and all content is converted to uppercase.
  * @param (optional) boolean The default value; defaults to false
@@ -19,6 +19,8 @@ function config($name, $default = false, $use_app = null) {
   $constant = strtoupper(str_replace('.', '_', $name));
   if (defined($constant)) {
     $value = constant($constant);
+  } else if (isset($_ENV[$constant])) {
+    $value = $_ENV[$constant];
   } else if (isset($_SERVER[$constant])) {
     $value = $_SERVER[$constant];
   } else if (!empty($a)) {

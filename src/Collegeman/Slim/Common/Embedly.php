@@ -24,7 +24,7 @@ class Embedly {
    * @see config()
    * @throws Exception If the API response code is anything other than 200
    */
-  function oembed($url, $opts = array()) {
+  static function oembed($url, $opts = array()) {
     $api = self::$root.'/oembed?'.http_build_query(array_merge(array(
       'key' => config('embedly.key'),
       'url' => $url
