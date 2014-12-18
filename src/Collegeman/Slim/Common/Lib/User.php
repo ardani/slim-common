@@ -16,7 +16,7 @@ class User extends \Model {
     $mem = "user:{$id}";
     if ($user = memget($mem)) {
       return $user;
-    } 
+    }
     $user = Model::factory(get_called_class())
       ->where('id', $id)
       ->find_one();
@@ -46,7 +46,7 @@ class User extends \Model {
   }
 
   /**
-   * Generate a key suitable for authentication with a timeout 
+   * Generate a key suitable for authentication with a timeout
    * specified in minutes, then e-mail that key to this user.
    * @param int Number of minutes user has to login with key
    */
@@ -147,7 +147,7 @@ class User extends \Model {
 
     set_session($newUser, isset($userdata->remember) ? $userdata->remember : false);
 
-    // null out password 
+    // null out password
     $newUser->password = null;
 
     return $newUser;
@@ -176,7 +176,7 @@ class User extends \Model {
     if (!isset($userdata->password)) {
       throw new \Exception("Password is required");
     }
-    
+
     $user = Model::factory(get_called_class())->where('email_address', $userdata->email_address)->find_one();
     if (!$user) {
       throw new \Exception("Oops! No user is registered for that e-mail address.");
@@ -187,7 +187,7 @@ class User extends \Model {
 
     $user->utc_date_last_login = date('c', true);
     $user->save();
-    
+
     set_session($user, isset($userdata->remember) ? $userdata->remember : false);
 
     return $user;
@@ -254,7 +254,7 @@ class User extends \Model {
           throw new \Exception("Preference name [{$pname}] is too long");
         }
         if (!preg_match('/^[\w_-]+$/', $name)) {
-          throw new \Exception("Invalid preference name [{$pname}] is too long"); 
+          throw new \Exception("Invalid preference name [{$pname}] is too long");
         }
         ORM::raw_execute("
           INSERT INTO user_setting (
@@ -266,7 +266,7 @@ class User extends \Model {
           ) ON DUPLICATE KEY UPDATE
             `user_id` = VALUES(`user_id`),
             `name` = VALUES(`name`),
-            `value` = VALUES(`value`)        
+            `value` = VALUES(`value`)
         ", array(
           current_user()->id,
           $name,
@@ -280,7 +280,7 @@ class User extends \Model {
       foreach($prefs as $pname => $value) {
         $name = 'pref_'.trim($pname);
         ORM::raw_execute("
-          DELETE FROM user_setting 
+          DELETE FROM user_setting
           WHERE
             `user_id` = ?
             AND `name` = ?
@@ -318,8 +318,8 @@ class User extends \Model {
     return $bcrypt->hash($cleartext.config('auth.salt'));
   }
 
-  function isEmailAddressRegistered($email_address) {
-    return (bool) Model::factory(get_called_class())->where('email_address', $email_address)->find_one();
+  static function isEmailAddressRegistered($email_address) {
+    return (bool) Model::factory('user')->where('email_address', $email_address)->find_one();
   }
 
   function roles() {
@@ -356,14 +356,14 @@ class User extends \Model {
       } else {
         return Model::factory('RoleUser')->where('user_id', $this->id())->where('role_id', $role->id)->delete_many();
       }
-    }    
+    }
   }
 
   /*
   function in($group, $bool = null) {
     // getter:
     if (is_null($bool)) {
-      return (bool) $this->groups()->where('group', $group)->find_one();  
+      return (bool) $this->groups()->where('group', $group)->find_one();
     // setter:
     } else {
       if (true === (bool) $bool) {
@@ -377,7 +377,7 @@ class User extends \Model {
       } else {
         return $this->groups()->where('group', $group)->delete();
       }
-    }  
+    }
   }
   */
 }
