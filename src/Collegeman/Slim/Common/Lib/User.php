@@ -319,7 +319,7 @@ class User extends \Model {
   }
 
   static function isEmailAddressRegistered($email_address) {
-    return (bool) Model::factory('user')->where('email_address', $email_address)->find_one();
+    return (bool) Model::factory(get_called_class())->where('email_address', $email_address)->find_one();
   }
 
   function roles() {
