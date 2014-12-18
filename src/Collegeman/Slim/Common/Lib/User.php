@@ -3,6 +3,7 @@ namespace Collegeman\Slim\Common\Lib;
 
 use Model;
 use Collegeman\Slim\Common\Bcrypt;
+use Collegeman\Slim\Common\EmailAddressAlreadyRegisteredException;
 
 class User extends \Model {
 
