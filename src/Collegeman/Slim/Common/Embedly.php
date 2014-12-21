@@ -50,7 +50,7 @@ class Embedly {
    * @see config()
    * @throws Exception If the API response code is anything other than 200
    */
-  function extract($url, $opts = array()) {
+  static function extract($url, $opts = array()) {
     $api = self::$root.'/extract?'.http_build_query(array_merge(array(
       'key' => config('embedly.key'),
       'url' => $url
